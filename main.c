@@ -40,21 +40,20 @@ int		check_key(int key, void *param)
 void	handle_error(int code)
 	{
 		if (!code)
-			ft_printf("Error");
+			ft_printf("Error\n");
 		if (code == 1)
 		{
-			ft_printf("Error: Amount of arguments is not 1");
+			ft_printf("Error: Amount of arguments is not 1\n");
 		}
 		if (code == 2)
-			ft_printf("Error: Invalid map");
-		if (code == 3)
-			ft_printf("Error: Invalid file");
+			ft_printf("Error: Invalid map\n");
 		exit(0);
 	}
 
-int		check_map(char **map)
+//move to libft
+int		ft_isdigit_neg(char *str)
 {
-	
+	return (str[0] == '-' && ft_isdigit(str[1]));
 }
 
 void	check_line(char *line)
@@ -63,11 +62,14 @@ void	check_line(char *line)
 
 	i = 0;
 	while (line[i])
-		if (!ft_isdigit(line[i]) && line[i] != ' ')
-			handle_error(3);
+	{
+		if (!ft_isdigit(line[i]) && line[i] != ' ' && !ft_isdigit_neg(&line[i]))
+			handle_error(2);
+		i++;
+	}
 }
 
-int		count_ints(char **line)
+int		count_ints(char *line)
 {
 	int i;
 	int count;
@@ -78,14 +80,16 @@ int		count_ints(char **line)
 	{
 		while (line[i] == ' ' && line[i])
 			i++;
-		if (ft_isdigit(line[i]))
+		if (ft_isdigit(line[i]) || ft_isdigit_neg(&line[i]))
 		{
+			if (line[i] == '-')
+				i++;
 			while (ft_isdigit(line[i]))
 				i++;
 			count++;
 		}
 	}
-	return (count)
+	return (count);
 }
 
 void	store_map_line(char *line, t_map *s_map)
@@ -100,15 +104,20 @@ void	store_map_line(char *line, t_map *s_map)
 	count = count_ints(line);
 	if (s_map->cols)
 		if (count != s_map->cols)
-			handle_error(3);
-	s_map->map[s_map->rows] = (int*)malloc(sizeof(int) * count;
+			handle_error(2);
+	s_map->map[s_map->rows] = (int*)malloc(sizeof(int) * count);
 	while (line[i])
 	{
-		while (line[i] == ' ' && line[i])
-					i++;
-		if (ft_isdigit(line[i]))
+		while (line[i] == ' ')
+			i++;
+		if (ft_isdigit(line[i]) || ft_isdigit_neg(&line[i]))
 			s_map->map[s_map->rows][col++] = ft_atoi(&line[i]);
+		if (line[i] == '-')
+			i++;
+		while (ft_isdigit(line[i]))
+			i++;
 	}
+	s_map->rows++;
 	s_map->cols = col;
 }
 
@@ -117,12 +126,34 @@ void	store_map(char *file, t_map *s_map)
 	int fd;
 	char *line;
 
+	//fix to malloc correct amount of rows
+	s_map->map = (int**)malloc(sizeof(int*) * 11);
 	s_map->rows = 0;
 	s_map->cols = 0;
 	fd = open(file, O_RDONLY);
-	while (get_next_line(fd, &line))
+	while (get_next_line(fd, &line) > 0)
 	{
 		store_map_line(line, s_map);
+		free(line);
+	}
+	close(fd);
+}
+
+void	print_map(t_map *s_map)
+{
+	int i;
+	int j;
+
+	i = 0;
+	while (i < s_map->rows)
+	{
+		j = 0;
+		while (j < s_map->cols)
+		{
+			ft_printf("%3d ", s_map->map[i][j++]);
+		}
+		ft_printf("\n");
+		i++;
 	}
 }
 
@@ -133,10 +164,10 @@ int		main(int argc, char **argv)
 
 	if (argc != 2)
 		handle_error(1);
+	s_map = (t_map*)malloc(sizeof(*s_map));
 	store_map(argv[1], s_map);
-	if (!check_map(s_map->map))
-		handle_error(2);
-	mlx = (t_mlx*)malloc(sizeof(*mlx));
+	print_map(s_map);
+	mlx = (t_mlx*)malloc(sizeof(t_mlx));
 	mlx->init = mlx_init();
 	mlx->height = 500;
 	mlx->width = 500;
