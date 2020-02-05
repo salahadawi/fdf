@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   store_input.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/05 13:56:50 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/05 13:56:53 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/05 16:55:53 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ void	store_map_line(char *line, t_map *s_map)
 	if (s_map->cols)
 		if (count != s_map->cols)
 			handle_error(2);
-	s_map->map[s_map->rows] = (int*)malloc(sizeof(int) * count);
+	if (!(s_map->map[s_map->rows] = (int*)malloc(sizeof(int) * count)))
+        handle_error(3);
 	while (line[i])
 	{
 		while (line[i] == ' ')
@@ -61,11 +62,13 @@ void	malloc_extra_row(t_map *s_map)
 	int **tmp;
 	int i;
 
-	tmp = (int**)malloc(sizeof(int*) * (s_map->rows));
+	if (!(tmp = (int**)malloc(sizeof(int*) * (s_map->rows))))
+        handle_error(3);
 	ft_memcpy(tmp, s_map->map, sizeof(int**) * s_map->rows);
 	if (s_map->rows)
 		free(s_map->map);
-	s_map->map = (int**)malloc(sizeof(int*) * (s_map->rows + 1));
+	if (!(s_map->map = (int**)malloc(sizeof(int*) * (s_map->rows + 1))))
+        handle_error(3);
 	i = 0;
 	while (i < s_map->rows)
 	{
