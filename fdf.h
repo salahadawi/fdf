@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fdf.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/04 14:41:35 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/05 17:08:34 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,8 @@
 #include "libft/libft.h"
 #include "libft/get_next_line.h"
 
-typedef	struct	s_mlx
-{
-	void        *init;
-    void        *window;
-    int         height;
-    int         width;
-    int         x;
-    int         y;
-
-}				t_mlx;
+#define WINDOW_HEIGHT 1000
+#define WINDOW_WIDTH 1500
 
 typedef struct  s_map    
 {
@@ -36,6 +28,28 @@ typedef struct  s_map
 
 }               t_map;
 
+typedef	struct	s_mlx
+{
+    void        *init;
+    void        *window;
+    void        *image_ptr;
+    char        *image;
+    int         bpp;
+    int         size_line;
+    int         endian;
+    t_map      *s_map;
+
+}				t_mlx;
+
+typedef struct s_line
+{
+    int         x1;
+    int         y1;
+    int         x2;
+    int         y2;
+    int         color;
+}               t_line;
+
 void	print_map(t_map *s_map);
 void	store_map(char *file, t_map *s_map);
 void	malloc_extra_row(t_map *s_map);
@@ -44,4 +58,5 @@ int		count_ints(char *line);
 void	check_line(char *line);
 void	handle_error(int code);
 int		check_key(int key, void *param);
-int		draw_line(int dir, void *param);
+void	draw_line(t_line *line, t_mlx *mlx);
+int     draw_map(void *param);
