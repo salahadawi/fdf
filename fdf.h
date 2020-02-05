@@ -35,3 +35,13 @@ typedef struct  s_map
     int         rows;
 
 }               t_map;
+
+void	print_map(t_map *s_map);
+void	store_map(char *file, t_map *s_map);
+void	malloc_extra_row(t_map *s_map);
+void	store_map_line(char *line, t_map *s_map);
+int		count_ints(char *line);
+void	check_line(char *line);
+void	handle_error(int code);
+int		check_key(int key, void *param);
+int		draw_line(int dir, void *param);
