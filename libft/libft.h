@@ -178,4 +178,6 @@ long				ft_atoilong(const char *str);
 
 char				*ft_strjoinfree(char *s1, char *s2);
 
+int					ft_isdigit_neg(char *str);
+
 #endif
