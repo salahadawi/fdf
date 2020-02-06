@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/05 17:08:34 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/06 14:06:01 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,35 +20,38 @@
 #define WINDOW_HEIGHT 1000
 #define WINDOW_WIDTH 1500
 
-typedef struct  s_map    
+typedef struct  s_map
 {
-    int         **map;
-    int         cols;
-    int         rows;
+	int			**map;
+	int			cols;
+	int			rows;
 
-}               t_map;
+}				t_map;
 
-typedef	struct	s_mlx
-{
-    void        *init;
-    void        *window;
-    void        *image_ptr;
-    char        *image;
-    int         bpp;
-    int         size_line;
-    int         endian;
-    t_map      *s_map;
-
-}				t_mlx;
 
 typedef struct s_line
 {
-    int         x1;
-    int         y1;
-    int         x2;
-    int         y2;
-    int         color;
-}               t_line;
+	int			x1;
+	int			y1;
+	int			x2;
+	int			y2;
+	int			color;
+	int			zoom;
+}				t_line;
+
+typedef	struct	s_mlx
+{
+	void		*init;
+	void		*window;
+	void		*image_ptr;
+	char		*image;
+	int			bpp;
+	int			size_line;
+	int			endian;
+	t_map		*s_map;
+	t_line		*line;
+
+}				t_mlx;
 
 void	print_map(t_map *s_map);
 void	store_map(char *file, t_map *s_map);
@@ -59,4 +62,4 @@ void	check_line(char *line);
 void	handle_error(int code);
 int		check_key(int key, void *param);
 void	draw_line(t_line *line, t_mlx *mlx);
-int     draw_map(void *param);
+int		handle_drawing(void *param);
