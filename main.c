@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/06 14:19:59 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/06 18:34:46 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,6 @@ int		check_key(int key, void *param)
 		exit(0);
 	if (key == 126)
 		handle_drawing(mlx);
-	if (key == 4)
-		mlx->line->zoom++;
-	if (key == 5)
-		mlx->line->zoom--;
 	handle_drawing(mlx);
 	return (0);
 }
@@ -37,9 +33,9 @@ int		check_mouse(int key, int x, int y, void *param)
 	(void)y;
 	mlx = param;
 	if (key == 4)
-		mlx->line->zoom++;
-	if (key == 5)
-		mlx->line->zoom--;
+		mlx->line->zoom += 2;
+	if (key == 5 && mlx->line->zoom > 2)
+		mlx->line->zoom -= 2;
 	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
@@ -66,6 +62,8 @@ void	draw_pixel(int x, int y, int color, t_mlx *mlx)
 	int G;
 	int B;
 
+	if (x < 0 || y < 0 || 1500 < x || 1000 < y)
+		return ;
 	B = color % 256;
 	G = color/256 % 256;
 	R = color/256/256 % 256;
@@ -74,21 +72,125 @@ void	draw_pixel(int x, int y, int color, t_mlx *mlx)
 	mlx->image[x * 4 + y * mlx->size_line + 2] = B;
 }
 
+void	plot_line_low(t_line *line, t_mlx *mlx)
+{
+	int dxy[2];
+	int xy[2];
+	int yi;
+	int D;
+
+	dxy[0] = line->x2 - line->x1;
+	dxy[1] = line->y2 - line->y1;
+	yi = 1;
+	if (dxy[1] < 0)
+	{
+		yi = -1;
+		dxy[1] *= -1;
+	}
+	D = 2 * dxy[1] - dxy[0];
+	xy[0] = line->x1;
+	xy[1] = line->y1;
+	while (xy[0] <= line->x2)
+	{
+		draw_pixel(xy[0], xy[1], line->color, mlx);
+		if (D > 0)
+		{
+			xy[1] += yi;
+			D -= 2 * dxy[0];
+		}
+		xy[0]++;
+		D += 2 * dxy[1];
+	}
+}
+
+void	plot_line_high(t_line *line, t_mlx *mlx)
+{
+	int dxy[2];
+	int xy[2];
+	int xi;
+	int D;
+
+	dxy[0] = line->x2 - line->x1;
+	dxy[1] = line->y2 - line->y1;
+	xi = 1;
+	if (dxy[0] < 0)
+	{
+		xi = -1;
+		dxy[0] *= -1;
+	}
+	D = 2 * dxy[0] - dxy[1];
+	xy[0] = line->x1;
+	xy[1] = line->y1;
+	while (xy[1] <= line->y2)
+	{
+		draw_pixel(xy[0], xy[1], line->color, mlx);
+		if (D > 0)
+		{
+			xy[0] += xi;
+			D -= 2 * dxy[1];
+		}
+		xy[1]++;
+		D += 2 * dxy[0];
+	}
+}
+
+void	swap_points(t_line *line)
+{
+	int tmp;
+
+	tmp = line->x1;
+	line->x1 = line->x2;
+	line->x2 = tmp;
+	tmp = line->y1;
+	line->y1 = line->y2;
+	line->y2 = tmp;
+}
+
+void	plot_line(t_line *line, t_mlx *mlx)
+{
+	if (abs(line->y2 -line->y1) < abs(line->x2 - line->x1))
+	{
+		if (line->x1 > line->x2)
+		{
+			swap_points(line);
+			plot_line_low(line, mlx);
+			swap_points(line);
+		}
+		else
+			plot_line_low(line, mlx);
+	}
+	else
+	{
+		if (line->y1 > line->y2)
+		{
+			swap_points(line);
+			plot_line_high(line, mlx);
+			swap_points(line);
+		}
+		else
+			plot_line_high(line, mlx);
+	}
+}
+
 void	draw_line(t_line *line, t_mlx *mlx)
 {
-	int x;
-	int y;
+	//int x;
+	//int y;
 
-	x = line->x1;
-	y = line->y1;
-	while (x < line->x2)
-	{
-		draw_pixel(++x, y, line->color, mlx);
-	}
-	while (y < line->y2)
-	{
-		draw_pixel(x, ++y, line->color, mlx);
-	}
+	// if (line->x1 > line->x2)
+	// {
+	// 	x = line->x2;
+	// 	line->x2 = line->x1;
+	// 	line->x1 = x;
+	// }
+	// x = line->x1;
+	// while (x < line->x2)
+	// {
+	// 	y = line->y1 + (line->y2 - line->y1) * (x - line->x1) / (line->x2 - line->x1);
+	// 	draw_pixel(x, y, line->color, mlx);
+	// 	x++;
+	// }
+	plot_line(line, mlx);
 }
 
 void	handle_line_draw(int xy[5], t_line *line, t_mlx *mlx)
@@ -120,6 +222,8 @@ void	draw_map(t_line *line, t_mlx *mlx)
 		}
 		i++;
 	}
+	// handle_line_draw(((int[5]){1, 5, 2, 3, 0xFFFFFF}), line, mlx);
+	// handle_line_draw(((int[5]){2, 3, 5, 7, 0xFFFFFF}), line, mlx);
 }
 
 int	handle_drawing(void *param)

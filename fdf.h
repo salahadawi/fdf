@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/06 14:06:01 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/06 17:40:14 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "libft/ft_printf.h"
 #include "libft/libft.h"
 #include "libft/get_next_line.h"
+#include <math.h>
 
 #define WINDOW_HEIGHT 1000
 #define WINDOW_WIDTH 1500
