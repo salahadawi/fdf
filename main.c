@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/07 14:33:16 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/07 19:15:58 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,53 +220,107 @@ void	draw_line(t_line *line, t_mlx *mlx)
 	plot_line(line, mlx);
 }
 
-void	transform_iso(int xy[6], t_mlx *mlx)
+void	transform_iso(t_line *line, t_mlx *mlx)
 {
 	int prev_x;
 	int prev_y;
 
 	(void)mlx;
-	prev_x = xy[0];
-	prev_y = xy[2];
-	ft_printf("%d, %d, %d\n", prev_x, prev_y, xy[4]);
+	prev_x = line->x1;
+	prev_y = line->x2;
+	//ft_printf("%d, %d, %d\n", prev_x, prev_y, xy[4]);
 	//ft_printf("%d\n", mlx->s_map->map[prev_x][prev_y]);
-	xy[0] = (prev_x - prev_y) * cos(0.523599);
-	xy[2] = -xy[4] + (prev_x + prev_y) * sin(0.523599);
-	prev_x = xy[1];
-	prev_y = xy[3];
-	xy[1] = (prev_x - prev_y) * cos(0.523599);
-	xy[3] = -xy[4] + (prev_x + prev_y) * sin(0.523599);
+	line->x1 = (prev_x - prev_y) * cos(0.523599);
+	line->y1 = -line->z1 + (prev_x + prev_y) * sin(0.523599);
+	prev_x = line->x2;
+	prev_y = line->y2;
+	line->x2 = (prev_x - prev_y) * cos(0.523599);
+	line->y2 = -line->z2 + (prev_x + prev_y) * sin(0.523599);
 }
 
-void	handle_line_draw(int xy[6], t_line *line, t_mlx *mlx)
+void	handle_line_draw(int xy[4], t_line *line, t_mlx *mlx)
 {
+		int *map;
+
+		map = mlx->s_map->mapxy;
+		if (xy[0] != xy[1])
+		{
+			line->x1 = map[xy[0] * 3] * line->zoom + line->offsetx;
+			line->x2 = map[xy[1] * 3] * line->zoom + line->offsetx;
+			line->y1 = map[xy[0] * 3 + 1] * line->zoom + line->offsety;
+			line->y2 = map[xy[1] * 3 + 1] * line->zoom + line->offsety;
+			line->z1 = map[xy[0] * 3 + 2];
+			line->z2 = map[xy[1] * 3 + 2];
+		}
+		else
+		{
+			line->x1 = map[xy[0] * 3] * line->zoom + line->offsetx;
+			line->x2 = map[xy[1] * 3] * line->zoom + line->offsetx;
+			line->y1 = map[xy[2] * 3 + 1] * line->zoom + line->offsety;
+			line->y2 = map[xy[3] * 3 + 1] * line->zoom + line->offsety;
+			line->z1 = map[xy[2] * 3 + 2];
+			line->z2 = map[xy[3] * 3 + 2];
+		}
+
+		//ft_printf("testix:%d, ix2:%d, iy:%d, iy2:%d, iz1:%d, iz2:%d\n", xy[0] * 3, xy[1] * 3, xy[0] * 3 + 1, xy[1] * 3 + 1, xy[0] * 3 + 2, xy[1] * 3 + 2);
+		//ft_printf("ix:%d, ix2:%d, iy:%d, iy2:%d, iz1:%d, iz2:%d\n", map[xy[0] * 3], map[xy[1] * 3], map[xy[0] * 3 + 1], map[xy[1] * 3 + 1], map[xy[0] * 3 + 2], map[xy[1] * 3 + 1]);
+		ft_printf("x:%d, y:%d, x2:%d, y2:%d, z1:%d, z2:%d\n", line->x1, line->y1, line->x2, line->y2, line->z1, line->z2);
 		if (line->iso)
-			transform_iso(xy, mlx);
-		line->x1 = xy[0] * line->zoom + line->offsetx;
-		line->x2 = xy[1] * line->zoom + line->offsetx;
-		line->y1 = xy[2] * line->zoom + line->offsety;
-		line->y2 = xy[3] * line->zoom + line->offsety;
-		line->color = xy[5];
+			transform_iso(line, mlx);
 		draw_line(line, mlx);
 }
 
 void	draw_map(t_line *line, t_mlx *mlx)
 {
+	int y;
+	int x;
+
+	y = 0;
+	while (y < mlx->s_map->rows)
+	{
+		x = 0;
+		while (x < mlx->s_map->cols)
+		{
+			if (x + 1 < mlx->s_map->cols)
+				handle_line_draw(((int[4]){x, x + 1, y, y}), line, mlx);
+			if (y + 1 < mlx->s_map->rows)
+				handle_line_draw(((int[4]){x, x, y, y + 1}), line, mlx);
+			x++;
+		}
+		y++;
+	}
+}
+
+void	map_to_coordinates(t_map *s_map)
+{
 	int i;
 	int j;
+	int x;
+	int y;
+	int count;
 
+	if (!(s_map->mapxy = (int*)malloc(sizeof(int) * s_map->rows * s_map->cols * 3)))
+		handle_error(3);
 	i = 0;
-	while (i < mlx->s_map->rows)
+	y = 0;
+	count = 0;
+	while (i < s_map->rows)
 	{
 		j = 0;
-		while (j < mlx->s_map->cols)
+		x = 0;
+		while (j < s_map->cols)
 		{
-			if (j + 1 < mlx->s_map->cols)
-				handle_line_draw(((int[6]){j, j + 1, i, i, mlx->s_map->map[i][j], 0xFFFFFF}), line, mlx);
-			if (i + 1 < mlx->s_map->rows)
-				handle_line_draw(((int[6]){j, j, i, i + 1, mlx->s_map->map[i][j], 0xFFFFFF}), line, mlx);
+			s_map->mapxy[count] = x;
+			s_map->mapxy[count + 1] = y;
+			//ft_printf("%d, %d, %d\n", count - 2, count - 1, count);
+
+			s_map->mapxy[count + 2] = s_map->map[i][j];
+			ft_printf("%d, %d, %d\n", x, y, s_map->map[i][j]);
 			j++;
+			x += 5;
+			count += 3;
 		}
+		y += 5;
 		i++;
 	}
 }
@@ -276,6 +330,7 @@ int	handle_drawing(void *param)
 	t_mlx *mlx;
 
 	mlx = param;
+	map_to_coordinates(mlx->s_map);
 	draw_map(mlx->line, mlx);
 	mlx_put_image_to_window(mlx->init, mlx->window, mlx->image_ptr, 0, 0);
 	return (0);
@@ -284,9 +339,10 @@ int	handle_drawing(void *param)
 void	initialize_line(t_line *line, t_mlx *mlx)
 {
 	(void)mlx;
+	line->color = 0xFFFFFF;
 	line->zoom = 1;
 	line->offsetx = 750 - mlx->s_map->cols / 2;
-	line->offsety = 500- mlx->s_map->rows / 2;
+	line->offsety = 500 - mlx->s_map->rows / 2;
 	line->iso = 0;
 }
 
@@ -325,3 +381,5 @@ int		main(int argc, char **argv)
 	handle_graphics(s_map);
 	return (0);
 }
+
+//Problem in handle_line_draw, accessing wrong indexes. When y > 0, should skip all previous rows indexes.

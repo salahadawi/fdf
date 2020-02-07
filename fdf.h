@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/07 13:58:46 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/07 19:11:02 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 typedef struct  s_map
 {
 	int			**map;
+	int			*mapxy;
 	int			cols;
 	int			rows;
 
@@ -36,6 +37,8 @@ typedef struct s_line
 	int			y1;
 	int			x2;
 	int			y2;
+	int			z1;
+	int			z2;
 	int			color;
 	int			zoom;
 	int			offsetx;
