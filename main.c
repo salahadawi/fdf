@@ -6,11 +6,26 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/06 18:34:46 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/07 14:33:16 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
+
+void	handle_offset(int dir, void *param)
+{
+	t_mlx *mlx;
+
+	mlx = param;
+	if (dir == 0)
+		mlx->line->offsety -= 10;
+	if (dir == 1)
+		mlx->line->offsety += 10;
+	if (dir == 2)
+		mlx->line->offsetx += 10;
+	if (dir == 3)
+		mlx->line->offsetx -= 10;
+}
 
 int		check_key(int key, void *param)
 {
@@ -19,8 +34,11 @@ int		check_key(int key, void *param)
 	mlx = param;
 	if (key == 53)
 		exit(0);
-	if (key == 126)
-		handle_drawing(mlx);
+	if (122 < key && key < 127)
+		handle_offset(126 - key, param);
+	if (key == 0)
+		mlx->line->iso = !(mlx->line->iso);
+	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -33,9 +51,18 @@ int		check_mouse(int key, int x, int y, void *param)
 	(void)y;
 	mlx = param;
 	if (key == 4)
+	{
 		mlx->line->zoom += 2;
+		mlx->line->offsetx -= 2 * mlx->s_map->cols / 2;
+		mlx->line->offsety -= 2 * mlx->s_map->rows / 2;
+	}
 	if (key == 5 && mlx->line->zoom > 2)
+	{
 		mlx->line->zoom -= 2;
+		mlx->line->offsetx += 2 * mlx->s_map->cols / 2;
+		mlx->line->offsety += 2 * mlx->s_map->rows / 2;
+
+	}
 	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
@@ -193,13 +220,33 @@ void	draw_line(t_line *line, t_mlx *mlx)
 	plot_line(line, mlx);
 }
 
-void	handle_line_draw(int xy[5], t_line *line, t_mlx *mlx)
+void	transform_iso(int xy[6], t_mlx *mlx)
 {
-		line->x1 = xy[0] * line->zoom;
-		line->x2 = xy[1] * line->zoom;
-		line->y1 = xy[2] * line->zoom;
-		line->y2 = xy[3] * line->zoom;
-		line->color = xy[4];
+	int prev_x;
+	int prev_y;
+
+	(void)mlx;
+	prev_x = xy[0];
+	prev_y = xy[2];
+	ft_printf("%d, %d, %d\n", prev_x, prev_y, xy[4]);
+	//ft_printf("%d\n", mlx->s_map->map[prev_x][prev_y]);
+	xy[0] = (prev_x - prev_y) * cos(0.523599);
+	xy[2] = -xy[4] + (prev_x + prev_y) * sin(0.523599);
+	prev_x = xy[1];
+	prev_y = xy[3];
+	xy[1] = (prev_x - prev_y) * cos(0.523599);
+	xy[3] = -xy[4] + (prev_x + prev_y) * sin(0.523599);
+}
+
+void	handle_line_draw(int xy[6], t_line *line, t_mlx *mlx)
+{
+		if (line->iso)
+			transform_iso(xy, mlx);
+		line->x1 = xy[0] * line->zoom + line->offsetx;
+		line->x2 = xy[1] * line->zoom + line->offsetx;
+		line->y1 = xy[2] * line->zoom + line->offsety;
+		line->y2 = xy[3] * line->zoom + line->offsety;
+		line->color = xy[5];
 		draw_line(line, mlx);
 }
 
@@ -215,15 +262,13 @@ void	draw_map(t_line *line, t_mlx *mlx)
 		while (j < mlx->s_map->cols)
 		{
 			if (j + 1 < mlx->s_map->cols)
-				handle_line_draw(((int[5]){j, j + 1, i, i, 0xFFFFFF}), line, mlx);
+				handle_line_draw(((int[6]){j, j + 1, i, i, mlx->s_map->map[i][j], 0xFFFFFF}), line, mlx);
 			if (i + 1 < mlx->s_map->rows)
-				handle_line_draw(((int[5]){j, j, i, i + 1, 0xFFFFFF}), line, mlx);
+				handle_line_draw(((int[6]){j, j, i, i + 1, mlx->s_map->map[i][j], 0xFFFFFF}), line, mlx);
 			j++;
 		}
 		i++;
 	}
-	// handle_line_draw(((int[5]){1, 5, 2, 3, 0xFFFFFF}), line, mlx);
-	// handle_line_draw(((int[5]){2, 3, 5, 7, 0xFFFFFF}), line, mlx);
 }
 
 int	handle_drawing(void *param)
@@ -236,9 +281,13 @@ int	handle_drawing(void *param)
 	return (0);
 }
 
-void	initialize_line(t_line *line)
+void	initialize_line(t_line *line, t_mlx *mlx)
 {
-	line->zoom = 10;
+	(void)mlx;
+	line->zoom = 1;
+	line->offsetx = 750 - mlx->s_map->cols / 2;
+	line->offsety = 500- mlx->s_map->rows / 2;
+	line->iso = 0;
 }
 
 void	handle_graphics(t_map *s_map)
@@ -256,7 +305,7 @@ void	handle_graphics(t_map *s_map)
 	mlx->image = mlx_get_data_addr(mlx->image_ptr, &(mlx->bpp), &(mlx->size_line), &(mlx->endian));
 	mlx->s_map = s_map;
 	mlx->line = line;
-	initialize_line(mlx->line);
+	initialize_line(mlx->line, mlx);
 	mlx_hook(mlx->window, 2, 0, check_key, (void*)mlx);
 	mlx_hook(mlx->window, 4, 0, check_mouse, (void*)mlx);
 	mlx_hook(mlx->window, 12, 0, handle_drawing, (void*)mlx);

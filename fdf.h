@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/06 17:40:14 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/07 13:58:46 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,10 @@ typedef struct s_line
 	int			y2;
 	int			color;
 	int			zoom;
+	int			offsetx;
+	int			offsety;
+	int			iso;
+
 }				t_line;
 
 typedef	struct	s_mlx
