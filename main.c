@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/07 19:15:58 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/10 19:53:36 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,28 @@ void	handle_offset(int dir, void *param)
 		mlx->line->offsetx -= 10;
 }
 
+void	handle_roll(int key, void *param)
+{
+	t_mlx *mlx;
+
+	mlx = param;
+	if (key == 86)
+		mlx->line->roll--;
+	if (key == 88)
+		mlx->line->roll++;
+}
+
+void	handle_pitch(int key, void *param)
+{
+	t_mlx *mlx;
+
+	mlx = param;
+	if (key == 91)
+		mlx->line->pitch++;
+	if (key == 84)
+		mlx->line->pitch--;
+}
+
 int		check_key(int key, void *param)
 {
 	t_mlx *mlx;
@@ -36,8 +58,24 @@ int		check_key(int key, void *param)
 		exit(0);
 	if (122 < key && key < 127)
 		handle_offset(126 - key, param);
+	if (key == 86 || key == 88)
+		handle_roll(key, param);
+	if (key == 91 || key == 84)
+		handle_pitch(key, param);
 	if (key == 0)
+	{
+		if (!mlx->line->iso)
+		{
+		mlx->line->offsetx = 1100;
+		mlx->line->offsety = 100;
+		}
+		else
+		{
+			mlx->line->offsetx = 600;
+			mlx->line->offsety = 300;
+		}
 		mlx->line->iso = !(mlx->line->iso);
+	}
 	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
@@ -71,15 +109,15 @@ int		check_mouse(int key, int x, int y, void *param)
 void	handle_error(int code)
 {
 	if (!code)
-		ft_printf("Error\n");
+		//("Error\n");
 	if (code == 1)
 	{
-		ft_printf("Error: Amount of arguments is not 1\n");
+		//("Error: Amount of arguments is not 1\n");
 	}
 	if (code == 2)
-		ft_printf("Error: Invalid map\n");
+		//("Error: Invalid map\n");
 	if (code == 3)
-		ft_printf("Error: Malloc failed");
+		//("Error: Malloc failed");
 	exit(0);
 }
 
@@ -201,6 +239,7 @@ void	plot_line(t_line *line, t_mlx *mlx)
 
 void	draw_line(t_line *line, t_mlx *mlx)
 {
+	int *map;
 	//int x;
 	//int y;
 
@@ -217,6 +256,21 @@ void	draw_line(t_line *line, t_mlx *mlx)
 	// 	draw_pixel(x, y, line->color, mlx);
 	// 	x++;
 	// }
+	map = mlx->s_map->mapxy;
+	line->x1 = line->x1 * line->zoom + line->offsetx;
+	line->x2 = line->x2 * line->zoom + line->offsetx;
+	line->y1 = line->y1 * line->zoom + line->offsety;
+	line->y2 = line->y2 * line->zoom + line->offsety;
+	line->z1 = line->z1 * line->zoom;
+	line->z2 = line->z2 * line->zoom;
+	if (line->z1 && line->z2)
+		line->color = 0x0000FF;//0xFFFFFFF - line->z1 * 1000;
+	else if (line->z1)
+		line->color = 0xFFFFFFF - line->z1 * 1000;
+	else
+		line->color = 0xFFFFFFF - line->z2 * 1000;
+	if (line->iso)
+		transform_iso(line, mlx);
 	plot_line(line, mlx);
 }
 
@@ -227,15 +281,15 @@ void	transform_iso(t_line *line, t_mlx *mlx)
 
 	(void)mlx;
 	prev_x = line->x1;
-	prev_y = line->x2;
-	//ft_printf("%d, %d, %d\n", prev_x, prev_y, xy[4]);
-	//ft_printf("%d\n", mlx->s_map->map[prev_x][prev_y]);
-	line->x1 = (prev_x - prev_y) * cos(0.523599);
-	line->y1 = -line->z1 + (prev_x + prev_y) * sin(0.523599);
+	prev_y = line->y1;
+	////ft_printf("%d, %d, %d\n", prev_x, prev_y, xy[4]);
+	////("%d\n", mlx->s_map->map[prev_x][prev_y]);
+	line->x1 = (prev_x - prev_y) * cos(0.523599) - 200;
+	line->y1 = -line->z1 * line->pitch + (prev_x + prev_y) * sin(0.523599) - 200;
 	prev_x = line->x2;
 	prev_y = line->y2;
-	line->x2 = (prev_x - prev_y) * cos(0.523599);
-	line->y2 = -line->z2 + (prev_x + prev_y) * sin(0.523599);
+	line->x2 = (prev_x - prev_y) * cos(0.523599) - 200;
+	line->y2 = -line->z2 * line->pitch + (prev_x + prev_y) * sin(0.523599) - 200;
 }
 
 void	handle_line_draw(int xy[4], t_line *line, t_mlx *mlx)
@@ -243,30 +297,32 @@ void	handle_line_draw(int xy[4], t_line *line, t_mlx *mlx)
 		int *map;
 
 		map = mlx->s_map->mapxy;
-		if (xy[0] != xy[1])
-		{
-			line->x1 = map[xy[0] * 3] * line->zoom + line->offsetx;
-			line->x2 = map[xy[1] * 3] * line->zoom + line->offsetx;
-			line->y1 = map[xy[0] * 3 + 1] * line->zoom + line->offsety;
-			line->y2 = map[xy[1] * 3 + 1] * line->zoom + line->offsety;
-			line->z1 = map[xy[0] * 3 + 2];
-			line->z2 = map[xy[1] * 3 + 2];
-		}
-		else
-		{
-			line->x1 = map[xy[0] * 3] * line->zoom + line->offsetx;
-			line->x2 = map[xy[1] * 3] * line->zoom + line->offsetx;
-			line->y1 = map[xy[2] * 3 + 1] * line->zoom + line->offsety;
-			line->y2 = map[xy[3] * 3 + 1] * line->zoom + line->offsety;
-			line->z1 = map[xy[2] * 3 + 2];
-			line->z2 = map[xy[3] * 3 + 2];
-		}
+		line->x1 = map[xy[0] * 3 + xy[2] * mlx->s_map->cols * 3];// * line->zoom + line->offsetx;
+		line->x2 = map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3];// + line->roll * xy[3];// * line->zoom + line->offsetx;
+		line->y1 = map[xy[2] * mlx->s_map->cols * 3 + xy[0] * 3 + 1];// * line->zoom + line->offsety;
+		line->y2 = map[xy[3] * mlx->s_map->cols * 3 + xy[1] * 3 + 1] + line->roll * xy[1];// * line->zoom + line->offsety;
+		line->z1 = map[xy[0] * 3 + xy[2] * mlx->s_map->cols * 3 + 2];
+		line->z2 = map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3 + 2];
+		//map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3] =
 
-		//ft_printf("testix:%d, ix2:%d, iy:%d, iy2:%d, iz1:%d, iz2:%d\n", xy[0] * 3, xy[1] * 3, xy[0] * 3 + 1, xy[1] * 3 + 1, xy[0] * 3 + 2, xy[1] * 3 + 2);
-		//ft_printf("ix:%d, ix2:%d, iy:%d, iy2:%d, iz1:%d, iz2:%d\n", map[xy[0] * 3], map[xy[1] * 3], map[xy[0] * 3 + 1], map[xy[1] * 3 + 1], map[xy[0] * 3 + 2], map[xy[1] * 3 + 1]);
-		ft_printf("x:%d, y:%d, x2:%d, y2:%d, z1:%d, z2:%d\n", line->x1, line->y1, line->x2, line->y2, line->z1, line->z2);
-		if (line->iso)
-			transform_iso(line, mlx);
+		////("testix:%d, ix2:%d, iy:%d, iy2:%d, iz1:%d, iz2:%d\n", xy[0] * 3, xy[1] * 3, xy[0] * 3 + 1, xy[1] * 3 + 1, xy[0] * 3 + 2, xy[1] * 3 + 2);
+		////("ix:%d, ix2:%d, iy:%d, iy2:%d, iz1:%d, iz2:%d\n", map[xy[0] * 3], map[xy[1] * 3], map[xy[0] * 3 + 1], map[xy[1] * 3 + 1], map[xy[0] * 3 + 2], map[xy[1] * 3 + 1]);
+		//("x:%d, y:%d, x2:%d, y2:%d, z1:%d, z2:%d\n", line->x1, line->y1, line->x2, line->y2, line->z1, line->z2);
+		if (xy[2] == xy[3])
+		{
+			map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3] = line->x2;
+			map[xy[3] * mlx->s_map->cols * 3 + xy[1] * 3 + 1] = line->y2;
+		}
+		// if (xy[0] == xy[1])
+		// {
+		//  	map[xy[0] * 3 + xy[2] * mlx->s_map->cols * 3] = line->x1;
+		// 	map[xy[2] * mlx->s_map->cols * 3 + xy[0] * 3 + 1] = line->y1;
+		// }
+		// if (xy[2] == xy[3])
+		// {
+		// 	map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3] = line->x2;
+		// 	map[xy[3] * mlx->s_map->cols * 3 + xy[1] * 3 + 1] = line->y2;
+		// }
 		draw_line(line, mlx);
 }
 
@@ -312,10 +368,10 @@ void	map_to_coordinates(t_map *s_map)
 		{
 			s_map->mapxy[count] = x;
 			s_map->mapxy[count + 1] = y;
-			//ft_printf("%d, %d, %d\n", count - 2, count - 1, count);
+			////("%d, %d, %d\n", count - 2, count - 1, count);
 
 			s_map->mapxy[count + 2] = s_map->map[i][j];
-			ft_printf("%d, %d, %d\n", x, y, s_map->map[i][j]);
+			//ft_printf("%d, %d, %d\n", x, y, s_map->map[i][j]);
 			j++;
 			x += 5;
 			count += 3;
@@ -344,6 +400,8 @@ void	initialize_line(t_line *line, t_mlx *mlx)
 	line->offsetx = 750 - mlx->s_map->cols / 2;
 	line->offsety = 500 - mlx->s_map->rows / 2;
 	line->iso = 0;
+	line->roll = 0;
+	line->pitch = 0;
 }
 
 void	handle_graphics(t_map *s_map)
@@ -364,7 +422,8 @@ void	handle_graphics(t_map *s_map)
 	initialize_line(mlx->line, mlx);
 	mlx_hook(mlx->window, 2, 0, check_key, (void*)mlx);
 	mlx_hook(mlx->window, 4, 0, check_mouse, (void*)mlx);
-	mlx_hook(mlx->window, 12, 0, handle_drawing, (void*)mlx);
+	//mlx_hook(mlx->window, 12, 0, handle_drawing, (void*)mlx);
+	handle_drawing((void*)mlx);
 	mlx_loop(mlx->init);
 }
 
@@ -382,4 +441,5 @@ int		main(int argc, char **argv)
 	return (0);
 }
 
-//Problem in handle_line_draw, accessing wrong indexes. When y > 0, should skip all previous rows indexes.
+//create function to check highest altitude in file, then change color according to difference to max altitude :)
+//fix drawing wrapping around screen :-)
