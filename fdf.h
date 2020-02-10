@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/07 19:11:02 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/10 19:53:58 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,9 @@ typedef struct s_line
 	int			zoom;
 	int			offsetx;
 	int			offsety;
+	int			roll;
 	int			iso;
+	int			pitch;
 
 }				t_line;
 
@@ -71,3 +73,4 @@ void	handle_error(int code);
 int		check_key(int key, void *param);
 void	draw_line(t_line *line, t_mlx *mlx);
 int		handle_drawing(void *param);
+void	transform_iso(t_line *line, t_mlx *mlx);
