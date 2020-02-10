@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/05 13:56:50 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/05 16:55:53 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/10 19:50:57 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,8 @@ void	store_map_line(char *line, t_map *s_map)
 	{
 		while (line[i] == ' ')
 			i++;
-		s_map->map[s_map->rows][col++] = ft_atoi(&line[i]);
+		if (line[i])
+			s_map->map[s_map->rows][col++] = ft_atoi(&line[i]);
 		while (line[i] != ' ' && line[i])
 			i++;
 	}
