@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/11 13:51:21 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/11 20:08:26 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,17 @@ void	handle_iso(int key, void *param)
 		mlx->line->isoangle -= 0.01;
 }
 
+void	handle_rotatex(int key, void *param)
+{
+	t_mlx *mlx;
+
+	mlx = param;
+	if (key == 83)
+		mlx->line->rotatex -= 0.1;
+	if (key == 85)
+		mlx->line->rotatex += 0.1;
+}
+
 int		check_key(int key, void *param)
 {
 	t_mlx *mlx;
@@ -75,6 +86,8 @@ int		check_key(int key, void *param)
 		handle_pitch(key, param);
 	if (key == 89 || key == 92)
 		handle_iso(key, param);
+	if (key == 83 || key == 85)
+		handle_rotatex(key, param);
 	if (key == 0)
 	{
 		if (!mlx->line->iso)
@@ -95,13 +108,21 @@ int		check_key(int key, void *param)
 	return (0);
 }
 
-int		check_mouse(int key, int x, int y, void *param)
+int		mouse_press(int key, int x, int y, void *param)
 {
 	t_mlx *mlx;
 
-	(void)x;
-	(void)y;
 	mlx = param;
+	if (key == 1)
+	{
+		mlx->mouse1 = 1;
+		mlx->mousex = x;
+		mlx->mousey = y;
+	}
+	if (key == 2)
+	{
+		mlx->mouse2 = 1;
+	}
 	if (key == 4)
 	{
 		mlx->line->zoom += 2;
@@ -114,6 +135,58 @@ int		check_mouse(int key, int x, int y, void *param)
 		mlx->line->offsetx += 2 * mlx->s_map->cols / 2;
 		mlx->line->offsety += 2 * mlx->s_map->rows / 2;
 
+	}
+	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
+	handle_drawing(mlx);
+	return (0);
+}
+
+int		mouse_release(int key, int x, int y, void *param)
+{
+	t_mlx *mlx;
+
+	(void)x;
+	(void)y;
+	mlx = param;
+	if (key == 1)
+		mlx->mouse1 = 0;
+	if (key == 2)
+		mlx->mouse2 = 0;
+	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
+	handle_drawing(mlx);
+	return (0);
+}
+
+int		mouse_move(int x, int y, void *param)
+{
+	t_mlx *mlx;
+
+	mlx = param;
+	if (mlx->mouse1)
+	{
+		if (x > mlx->mousex)
+			mlx->line->offsetx += x - mlx->mousex;
+		else if (x < mlx->mousex)
+			mlx->line->offsetx -= mlx->mousex - x;
+		if (y > mlx->mousey)
+			mlx->line->offsety += y - mlx->mousey;
+		else if (y < mlx->mousey)
+			mlx->line->offsety -= mlx->mousey - y;
+		mlx->mousex = x;
+		mlx->mousey = y;
+	}
+	if (mlx->mouse2)
+	{
+		if (x > mlx->mousex)
+			mlx->line->rotatey -= 0.1;
+		else if (x < mlx->mousex)
+			mlx->line->rotatey += 0.1;
+		if (y > mlx->mousey)
+			mlx->line->rotatex -= 0.1;
+		else if (y < mlx->mousey)
+			mlx->line->rotatex += 0.1;
+		mlx->mousex = x;
+		mlx->mousey = y;
 	}
 	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
@@ -284,26 +357,51 @@ void	draw_line(t_line *line, t_mlx *mlx)
 	else
 		line->color = 0xFFFFFFF - line->z2 * 1000;
 	if (line->iso)
-		transform_iso(line, mlx);
+		transform_iso(line);
+	if (line->rotatex)
+		rotate_x(line);
+	if (line->rotatey)
+		rotate_y(line);
 	plot_line(line, mlx);
 }
 
-void	transform_iso(t_line *line, t_mlx *mlx)
+void	transform_iso(t_line *line)
 {
 	int prev_x;
 	int prev_y;
 
-	(void)mlx;
 	prev_x = line->x1;
 	prev_y = line->y1;
-	////ft_printf("%d, %d, %d\n", prev_x, prev_y, xy[4]);
-	////("%d\n", mlx->s_map->map[prev_x][prev_y]);
 	line->x1 = (prev_x - prev_y) * cos(line->isoangle) - 200;
 	line->y1 = -line->z1 * line->pitch + (prev_x + prev_y) * sin(line->isoangle) - 200;
 	prev_x = line->x2;
 	prev_y = line->y2;
 	line->x2 = (prev_x - prev_y) * cos(line->isoangle) - 200;
 	line->y2 = -line->z2 * line->pitch + (prev_x + prev_y) * sin(line->isoangle) - 200;
+}
+
+void	rotate_x(t_line *line)
+{
+	line->y1 = line->y1 * cos(line->rotatex) + line->z1 * sin(line->rotatex);
+	line->z1 = -line->y1 * sin(line->rotatex) + line->z1 * cos(line->rotatex);
+	line->y2 = line->y2 * cos(line->rotatex) + line->z2 * sin(line->rotatex);
+	line->z2 = -line->y2 * sin(line->rotatex) + line->z2 * cos(line->rotatex);
+}
+
+void	rotate_y(t_line *line)
+{
+	line->x1 = line->x1 * cos(line->rotatey) + line->z1 * sin(line->rotatey);
+	line->z1 = -line->x1 * sin(line->rotatey) + line->z1 * cos(line->rotatey);
+	line->x2 = line->x2 * cos(line->rotatey) + line->z2 * sin(line->rotatey);
+	line->z2 = -line->x2 * sin(line->rotatey) + line->z2 * cos(line->rotatey);
+}
+
+void	rotate_z(t_line *line)
+{
+	line->x1 = line->x1 * cos(line->rotatez) + line->y1 * sin(line->rotatez);
+	line->y1 = -line->x1 * sin(line->rotatez) + line->y1 * cos(line->rotatez);
+	line->x2 = line->x2 * cos(line->rotatez) + line->y2 * sin(line->rotatez);
+	line->y2 = -line->x2 * sin(line->rotatez) + line->y2 * cos(line->rotatez);
 }
 
 void	handle_line_draw(int xy[4], t_line *line, t_mlx *mlx)
@@ -387,10 +485,10 @@ void	map_to_coordinates(t_map *s_map)
 			s_map->mapxy[count + 2] = s_map->map[i][j];
 			//ft_printf("%d, %d, %d\n", x, y, s_map->map[i][j]);
 			j++;
-			x += 5;
+			x += 10;
 			count += 3;
 		}
-		y += 5;
+		y += 10;
 		i++;
 	}
 }
@@ -409,6 +507,8 @@ int	handle_drawing(void *param)
 void	initialize_line(t_line *line, t_mlx *mlx)
 {
 	(void)mlx;
+	mlx->mouse1 = 0;
+	mlx->mouse2 = 0;
 	line->color = 0xFFFFFF;
 	line->zoom = 1;
 	line->offsetx = 750 - mlx->s_map->cols / 2;
@@ -416,6 +516,9 @@ void	initialize_line(t_line *line, t_mlx *mlx)
 	line->iso = 0;
 	line->roll = 0;
 	line->pitch = 0;
+	line->rotatex = 0;
+	line->rotatey = 0;
+	line->rotatez = 0;
 }
 
 void	handle_graphics(t_map *s_map)
@@ -435,7 +538,9 @@ void	handle_graphics(t_map *s_map)
 	mlx->line = line;
 	initialize_line(mlx->line, mlx);
 	mlx_hook(mlx->window, 2, 0, check_key, (void*)mlx);
-	mlx_hook(mlx->window, 4, 0, check_mouse, (void*)mlx);
+	mlx_hook(mlx->window, 4, 0, mouse_press, (void*)mlx);
+	mlx_hook(mlx->window, 5, 0, mouse_release, (void*)mlx);
+	mlx_hook(mlx->window, 6, 0, mouse_move, (void*)mlx);
 	//mlx_hook(mlx->window, 12, 0, handle_drawing, (void*)mlx);
 	handle_drawing((void*)mlx);
 	mlx_loop(mlx->init);
@@ -456,4 +561,4 @@ int		main(int argc, char **argv)
 }
 
 //create function to check highest altitude in file, then change color according to difference to max altitude :)
-//fix drawing wrapping around screen :-)
+//add function to change map coordinates if coordinates go over screen

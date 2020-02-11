@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fdf.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/11 13:41:43 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/11 18:55:51 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,9 @@ typedef struct s_line
 	int			iso;
 	double		isoangle;
 	double		pitch;
+	double		rotatex;
+	double		rotatey;
+	double		rotatez;
 
 }				t_line;
 
@@ -59,6 +62,10 @@ typedef	struct	s_mlx
 	int			bpp;
 	int			size_line;
 	int			endian;
+	int			mouse1;
+	int			mouse2;
+	int			mousex;
+	int			mousey;
 	t_map		*s_map;
 	t_line		*line;
 
@@ -74,4 +81,6 @@ void	handle_error(int code);
 int		check_key(int key, void *param);
 void	draw_line(t_line *line, t_mlx *mlx);
 int		handle_drawing(void *param);
-void	transform_iso(t_line *line, t_mlx *mlx);
+void	transform_iso(t_line *line);
+void	rotate_x(t_line *line);
+void	rotate_y(t_line *line);
