@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/10 19:53:58 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/11 13:41:43 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ typedef struct s_line
 	int			offsety;
 	int			roll;
 	int			iso;
-	int			pitch;
+	double		isoangle;
+	double		pitch;
 
 }				t_line;
 

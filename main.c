@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/10 19:53:36 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/11 13:51:21 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,20 @@ void	handle_pitch(int key, void *param)
 
 	mlx = param;
 	if (key == 91)
-		mlx->line->pitch++;
+		mlx->line->pitch += 0.2;
 	if (key == 84)
-		mlx->line->pitch--;
+		mlx->line->pitch -= 0.2;
+}
+
+void	handle_iso(int key, void *param)
+{
+	t_mlx *mlx;
+
+	mlx = param;
+	if (key == 89)
+		mlx->line->isoangle += 0.01;
+	if (key == 92)
+		mlx->line->isoangle -= 0.01;
 }
 
 int		check_key(int key, void *param)
@@ -62,6 +73,8 @@ int		check_key(int key, void *param)
 		handle_roll(key, param);
 	if (key == 91 || key == 84)
 		handle_pitch(key, param);
+	if (key == 89 || key == 92)
+		handle_iso(key, param);
 	if (key == 0)
 	{
 		if (!mlx->line->iso)
@@ -74,6 +87,7 @@ int		check_key(int key, void *param)
 			mlx->line->offsetx = 600;
 			mlx->line->offsety = 300;
 		}
+		mlx->line->isoangle = 0.523599;
 		mlx->line->iso = !(mlx->line->iso);
 	}
 	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
@@ -127,7 +141,7 @@ void	draw_pixel(int x, int y, int color, t_mlx *mlx)
 	int G;
 	int B;
 
-	if (x < 0 || y < 0 || 1500 < x || 1000 < y)
+	if (x <= 0 || y <= 0 || 1500 <= x || 1000 <= y)
 		return ;
 	B = color % 256;
 	G = color/256 % 256;
@@ -284,12 +298,12 @@ void	transform_iso(t_line *line, t_mlx *mlx)
 	prev_y = line->y1;
 	////ft_printf("%d, %d, %d\n", prev_x, prev_y, xy[4]);
 	////("%d\n", mlx->s_map->map[prev_x][prev_y]);
-	line->x1 = (prev_x - prev_y) * cos(0.523599) - 200;
-	line->y1 = -line->z1 * line->pitch + (prev_x + prev_y) * sin(0.523599) - 200;
+	line->x1 = (prev_x - prev_y) * cos(line->isoangle) - 200;
+	line->y1 = -line->z1 * line->pitch + (prev_x + prev_y) * sin(line->isoangle) - 200;
 	prev_x = line->x2;
 	prev_y = line->y2;
-	line->x2 = (prev_x - prev_y) * cos(0.523599) - 200;
-	line->y2 = -line->z2 * line->pitch + (prev_x + prev_y) * sin(0.523599) - 200;
+	line->x2 = (prev_x - prev_y) * cos(line->isoangle) - 200;
+	line->y2 = -line->z2 * line->pitch + (prev_x + prev_y) * sin(line->isoangle) - 200;
 }
 
 void	handle_line_draw(int xy[4], t_line *line, t_mlx *mlx)
