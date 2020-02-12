@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   store_input.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sadawi <sadawi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/05 13:56:50 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/10 19:50:57 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/12 18:11:29 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ void	store_map(char *file, t_map *s_map)
 	//fix to malloc correct amount of rows
 	s_map->rows = 0;
 	s_map->cols = 0;
-	fd = open(file, O_RDONLY);
+	if ((fd = open(file, O_RDONLY)) == -1)
+		handle_error(4);
+	s_map->biggestz = 1;
 	while (get_next_line(fd, &line) > 0)
 	{
 		malloc_extra_row(s_map);
@@ -50,7 +52,11 @@ void	store_map_line(char *line, t_map *s_map)
 		while (line[i] == ' ')
 			i++;
 		if (line[i])
+		{
 			s_map->map[s_map->rows][col++] = ft_atoi(&line[i]);
+			if (s_map->biggestz < s_map->map[s_map->rows][col - 1])
+				s_map->biggestz = s_map->map[s_map->rows][col - 1];
+		}
 		while (line[i] != ' ' && line[i])
 			i++;
 	}
