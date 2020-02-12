@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/11 18:55:51 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/12 16:32:39 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct  s_map
 	int			*mapxy;
 	int			cols;
 	int			rows;
+	int			biggestz;
 
 }				t_map;
 
@@ -40,7 +41,8 @@ typedef struct s_line
 	int			z1;
 	int			z2;
 	int			color;
-	int			zoom;
+	double		zoom;
+	int			autooffset;
 	int			offsetx;
 	int			offsety;
 	int			roll;
@@ -84,3 +86,5 @@ int		handle_drawing(void *param);
 void	transform_iso(t_line *line);
 void	rotate_x(t_line *line);
 void	rotate_y(t_line *line);
+void	rotate_z(t_line *line);
+void	initialize_line(t_line *line, t_mlx *mlx);
