@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/13 17:50:44 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/13 17:53:57 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -718,7 +718,7 @@ int	handle_drawing(void *param)
 
 	mlx = param;
 	//map_to_coordinates(mlx->s_map);
-	//draw_background(mlx);
+	draw_background(mlx);
 	draw_map(mlx->line, mlx);
 	mlx_put_image_to_window(mlx->init, mlx->window, mlx->image_ptr, 0, 0);
 	return (0);
