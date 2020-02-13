@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/05 13:56:50 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/12 18:11:29 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/13 16:30:05 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@ void	store_map_line(char *line, t_map *s_map)
 	i = 0;
 	col = 0;
 	check_line(line);
-	count = count_ints(line);
+	if (!(count = count_ints(line)))
+		handle_error(2);
 	if (s_map->cols)
 		if (count != s_map->cols)
 			handle_error(2);
@@ -98,6 +99,21 @@ void	check_line(char *line)
 	}
 }
 
+int		bigger_than_int(char *line)
+{
+	int i;
+
+	i = 0;
+	while (ft_isdigit(line[i]))
+		i++;
+	if (i == 10)
+	{
+		if (ft_atoilong(&line[0]) > 2147483647)
+			return (1);
+	}
+	return !(i < 11);
+}
+
 int		count_ints(char *line)
 {
 	int i;
@@ -113,6 +129,8 @@ int		count_ints(char *line)
 		{
 			if (line[i] == '-')
 				i++;
+			if (bigger_than_int(&line[i]))
+				handle_error(2);
 			while (ft_isdigit(line[i]))
 				i++;
 			count++;

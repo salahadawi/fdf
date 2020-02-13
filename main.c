@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/13 14:21:13 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/13 17:15:16 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,16 +119,12 @@ int		check_key(int key, void *param)
 	{
 		if (!mlx->line->iso)
 		{
-			mlx->line->offsetx += 200;
-			mlx->line->offsety += 200;
 			mlx->line->rotatex = 0;
 			mlx->line->rotatey = 0;
 			mlx->line->rotatez = 0;
 		}
 		else
 		{
-			mlx->line->offsetx -= 200;
-			mlx->line->offsety -= 200;
 			mlx->line->rotatex = 0;
 			mlx->line->rotatey = 0;
 			mlx->line->rotatez = 0;
@@ -200,16 +196,16 @@ int		mouse_move(int x, int y, void *param)
 	if (mlx->mouse2)
 	{
 		if (x > mlx->mousex)
-			mlx->line->rotatey += (x - mlx->mousex) * 0.005;
+			mlx->line->rotatey += (x - mlx->mousex) * 0.002;
 		else if (x < mlx->mousex)
-			mlx->line->rotatey += (x - mlx->mousex) * 0.005;
+			mlx->line->rotatey += (x - mlx->mousex) * 0.002;
 		if (y > mlx->mousey)
 		{
-			mlx->line->rotatex += (y - mlx->mousey) * 0.005;
+			mlx->line->rotatex += (y - mlx->mousey) * 0.002;
 		}
 		else if (y < mlx->mousey)
 		{
-			mlx->line->rotatex += (y - mlx->mousey) * 0.005;
+			mlx->line->rotatex += (y - mlx->mousey) * 0.002;
 		}
 		mlx->mousex = x;
 		mlx->mousey = y;
@@ -537,12 +533,12 @@ void	transform_iso(t_line *line)
 
 	prev_x = line->x1;
 	prev_y = line->y1;
-	line->x1 = (prev_x - prev_y) * cos(line->isoangle) - 200;
-	line->y1 = -line->z1 + (prev_x + prev_y) * sin(line->isoangle) - 200;
+	line->x1 = (prev_x - prev_y) * cos(line->isoangle);
+	line->y1 = -line->z1 + (prev_x + prev_y) * sin(line->isoangle);
 	prev_x = line->x2;
 	prev_y = line->y2;
-	line->x2 = (prev_x - prev_y) * cos(line->isoangle) - 200;
-	line->y2 = -line->z2 + (prev_x + prev_y) * sin(line->isoangle) - 200;
+	line->x2 = (prev_x - prev_y) * cos(line->isoangle);
+	line->y2 = -line->z2 + (prev_x + prev_y) * sin(line->isoangle);
 }
 
 void	rotate_x(t_line *line)
@@ -699,7 +695,7 @@ int	handle_drawing(void *param)
 
 	mlx = param;
 	//map_to_coordinates(mlx->s_map);
-	draw_background(mlx);
+	//draw_background(mlx);
 	draw_map(mlx->line, mlx);
 	mlx_put_image_to_window(mlx->init, mlx->window, mlx->image_ptr, 0, 0);
 	return (0);
@@ -719,6 +715,8 @@ void	initialize_line(t_line *line, t_mlx *mlx)
 	line->iso = 0;
 	line->roll = 0;
 	line->pitch = mlx->s_map->biggestz * 0.1;
+	if (line->pitch > 10)
+		line->pitch = 10;
 	line->rotatex = 0;
 	line->rotatey = 0;
 	line->rotatez = 0;
