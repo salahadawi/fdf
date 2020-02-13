@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/12 18:14:16 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/13 14:21:13 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,8 @@ int		check_key(int key, void *param)
 		mlx->line->autooffset = !(mlx->line->autooffset);
 		handle_reset(mlx);
 	}
+	if (key == 1)
+		mlx->line->colors = !(mlx->line->colors);
 	if (122 < key && key < 127)
 		handle_offset(126 - key, param);
 	if (key == 86 || key == 88)
@@ -198,16 +200,22 @@ int		mouse_move(int x, int y, void *param)
 	if (mlx->mouse2)
 	{
 		if (x > mlx->mousex)
-			mlx->line->rotatey += 0.03;
+			mlx->line->rotatey += (x - mlx->mousex) * 0.005;
 		else if (x < mlx->mousex)
-			mlx->line->rotatey -= 0.03;
+			mlx->line->rotatey += (x - mlx->mousex) * 0.005;
 		if (y > mlx->mousey)
-			mlx->line->rotatex += 0.03;
+		{
+			mlx->line->rotatex += (y - mlx->mousey) * 0.005;
+		}
 		else if (y < mlx->mousey)
-			mlx->line->rotatex -= 0.03;
+		{
+			mlx->line->rotatex += (y - mlx->mousey) * 0.005;
+		}
 		mlx->mousex = x;
 		mlx->mousey = y;
 	}
+	mlx->mousex = x;
+	mlx->mousey = y;
 	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
@@ -236,7 +244,7 @@ void	draw_pixel(int x, int y, int color, t_mlx *mlx)
 	int G;
 	int B;
 
-	if (x <= 0 || y <= 0 || 1500 <= x || 1000 <= y)
+	if (x <= 0 || y <= 0 || WINDOW_WIDTH <= x || WINDOW_HEIGHT <= y)
 		return ;
 	B = color % 256;
 	G = color/256 % 256;
@@ -349,54 +357,112 @@ void	plot_line(t_line *line, t_mlx *mlx)
 void	handle_color_high(t_line *line, double d)
 {
 	if (d < 0.125)
-		line->color = 0xe5e5ff;
+		line->color = 0x40e191;
 	else if (d < 0.25)
-		line->color = 0xbfbfff;
+		line->color = 0x00c3a0;
 	else if (d < 0.375)
-		line->color = 0x9f9fff;
+		line->color = 0x00a5af;
 	else if (d < 0.5)
-		line->color = 0x8080ff;
+		line->color = 0x0087be;
 	else if (d < 0.625)
-		line->color = 0x6060ff;
+		line->color = 0x0069cd;
 	else if (d < 0.75)
-		line->color = 0x4040ff;
+		line->color = 0x004bdc;
 	else if (d < 0.875)
-		line->color = 0x2020ff;
+		line->color = 0x002deb;
 	else if (d <= 1)
 		line->color = 0x0000ff;
+	// if (d < 0.125)
+	// 	line->color = 0x087cff;
+	// else if (d < 0.25)
+	// 	line->color = 0x0096ff;
+	// else if (d < 0.375)
+	// 	line->color = 0x00a5ff;
+	// else if (d < 0.5)
+	// 	line->color = 0x00b4ff;
+	// else if (d < 0.625)
+	// 	line->color = 0xafffff;
+	// else if (d < 0.75)
+	// 	line->color = 0xc8ffff;
+	// else if (d < 0.875)
+	// 	line->color = 0xe1ffff;
+	// else if (d <= 1)
+	// 	line->color = 0xffffff;
 }
 
 void	handle_color_low(t_line *line, double d)
 {
 	if (d > -0.125)
-		line->color = 0xffe5e5;
+		line->color = 0x91e140;
 	else if (d > -0.25)
-		line->color = 0xffbfbf;
+		line->color = 0xa0c300;
 	else if (d > -0.375)
-		line->color = 0xff9f9f;
+		line->color = 0xafa500;
 	else if (d > -0.5)
-		line->color = 0xff8080;
+		line->color = 0xbe8700;
 	else if (d > -0.625)
-		line->color = 0xffe6060;
+		line->color = 0xcd6900;
 	else if (d > -0.75)
-		line->color = 0xff4040;
+		line->color = 0xdc4b00;
 	else if (d > -0.875)
-		line->color = 0xff2020;
+		line->color = 0xeb2d00;
 	else if (d >= -1)
 		line->color = 0xff0000;
+	// if (d > -0.125)
+	// 	line->color = 0x008cff;
+	// else if (d > -0.25)
+	// 	line->color = 0x0078ff;
+	// else if (d > -0.375)
+	// 	line->color = 0x0064ff;
+	// else if (d > -0.5)
+	// 	line->color = 0x0050ff;
+	// else if (d > -0.625)
+	// 	line->color = 0x003cff;
+	// else if (d > -0.75)
+	// 	line->color = 0x0028ff;
+	// else if (d > -0.875)
+	// 	line->color = 0x0014ff;
+	// else if (d >= -1)
+	// 	line->color = 0x0000ff;
+}
+
+void	handle_simple_color(t_line *line)
+{
+	if (line->z1 && line->z2)
+	{
+			if (line->z1 + line->z2 > 0)
+				line->color = 0x0000FF;
+			else
+				line->color = 0xFF0000;
+	}
+	else if (line->z1 || line->z2)
+	{
+			if (line->z1 > 0 || line->z2 > 0)
+				line->color = 0x0000FF;
+			else
+				line->color = 0xFF0000;
+	}
+	else
+			line->color = 0xFFFFFF;
 }
 
 void	handle_color(t_line *line, t_mlx *mlx)
 {
 	double d;
 
-	//ft_printf("%d\n", mlx->s_map->biggestz);
+	if (!line->colors)
+	{
+		handle_simple_color(line);
+		return ;
+	}
 	d = (line->z1 + line->z2) / 2;
 	d /= mlx->s_map->biggestz;
 	if (d > 0)
 		handle_color_high(line, d);
-	else
+	else if (d < 0)
 		handle_color_low(line, d);
+	else
+		line->color = 0xa4ffa4;//line->color = 0x0078ff;
 
 }
 void	draw_line(t_line *line, t_mlx *mlx)
@@ -657,6 +723,7 @@ void	initialize_line(t_line *line, t_mlx *mlx)
 	line->rotatey = 0;
 	line->rotatez = 0;
 	line->autooffset = 0;
+	line->colors = 0;
 }
 
 void	handle_graphics(t_map *s_map)

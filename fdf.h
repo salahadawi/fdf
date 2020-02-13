@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/12 16:32:39 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/13 14:11:43 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ typedef struct s_line
 	double		rotatex;
 	double		rotatey;
 	double		rotatez;
+	int			colors;
 
 }				t_line;
 
