@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/13 17:21:32 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/13 18:09:45 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 
 typedef struct  s_map
 {
+	char 		*name;
 	int			**map;
 	int			*mapxy;
 	int			cols;
@@ -70,6 +71,8 @@ typedef	struct	s_mlx
 	int			mouse2;
 	int			mousex;
 	int			mousey;
+	int			hud;
+	int			pro_type;
 	t_map		*s_map;
 	t_line		*line;
 

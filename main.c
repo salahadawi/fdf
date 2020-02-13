@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/13 17:53:57 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/13 18:22:38 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,9 @@ void	handle_rotatez(int key, void *param)
 
 	mlx = param;
 	if (key == 89)
-		mlx->line->rotatez -= 0.1;
+		mlx->line->rotatez -= 0.05;
 	if (key == 92)
-		mlx->line->rotatez += 0.1;
+		mlx->line->rotatez += 0.05;
 }
 
 void	handle_rotatex(int key, void *param)
@@ -126,6 +126,8 @@ int		check_key(int key, void *param)
 	}
 	if (key == 1)
 		mlx->line->colors = !(mlx->line->colors);
+	if (key == 4)
+		mlx->hud = !(mlx->hud);
 	if (122 < key && key < 127)
 		handle_offset(126 - key, param);
 	if (key == 86 || key == 88)
@@ -152,6 +154,7 @@ int		check_key(int key, void *param)
 		}
 		mlx->line->isoangle = 0.523599;
 		mlx->line->iso = !(mlx->line->iso);
+		mlx->pro_type = !(mlx->pro_type);
 	}
 	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
@@ -712,6 +715,16 @@ void	draw_background(t_mlx *mlx)
 	}
 }
 
+void	draw_hud(t_mlx *mlx)
+{
+	if (!mlx->pro_type)
+		mlx_string_put(mlx->init, mlx->window, 30, 30, 0xFFFFFF, "Parallel Projection");
+	if (mlx->pro_type)
+		mlx_string_put(mlx->init, mlx->window, 30, 30, 0xFFFFFF, "Isometric Projection");
+	mlx_string_put(mlx->init, mlx->window, 1450 - ft_strlen(mlx->s_map->name) * 10, 950, 0xFFFFFF, mlx->s_map->name);
+	//mlx_string_put(mlx->init, mlx->window, 30, 30, 0xFFFFFF, "Isometric Projection");
+}
+
 int	handle_drawing(void *param)
 {
 	t_mlx *mlx;
@@ -721,6 +734,9 @@ int	handle_drawing(void *param)
 	draw_background(mlx);
 	draw_map(mlx->line, mlx);
 	mlx_put_image_to_window(mlx->init, mlx->window, mlx->image_ptr, 0, 0);
+	if (mlx->hud)
+		draw_hud(mlx);
+	mlx_string_put(mlx->init, mlx->window, 1250, 30, 0xFFFFFF, "Press H to toggle GUI");
 	return (0);
 }
 
@@ -746,6 +762,8 @@ void	initialize_line(t_line *line, t_mlx *mlx)
 	line->autooffset = 0;
 	line->colors = 0;
 	line->idle = 1;
+	mlx->hud = 1;
+	mlx->pro_type = 0;
 }
 
 void	handle_graphics(t_map *s_map)
@@ -758,7 +776,7 @@ void	handle_graphics(t_map *s_map)
 	if (!(line = (t_line*)malloc(sizeof(t_line))))
 		handle_error(3);
 	mlx->init = mlx_init();
-	mlx->window = mlx_new_window(mlx->init, WINDOW_WIDTH, WINDOW_HEIGHT, "FDF");
+	mlx->window = mlx_new_window(mlx->init, WINDOW_WIDTH, WINDOW_HEIGHT, s_map->name);
 	mlx->image_ptr = mlx_new_image(mlx->init, WINDOW_WIDTH, WINDOW_HEIGHT);
 	mlx->image = mlx_get_data_addr(mlx->image_ptr, &(mlx->bpp), &(mlx->size_line), &(mlx->endian));
 	mlx->s_map = s_map;
@@ -783,6 +801,7 @@ int		main(int argc, char **argv)
 		handle_error(1);
 	if (!(s_map = (t_map*)malloc(sizeof(*s_map))))
 		handle_error(3);
+	s_map->name = ft_strdup(argv[1]);
 	store_map(argv[1], s_map);
 	print_map(s_map); //temporary to check if input has been stored correctly
 	handle_graphics(s_map);
