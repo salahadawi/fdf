@@ -6,11 +6,24 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/13 17:15:16 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/13 17:50:44 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
+
+int		handle_idle(void *param)
+{
+	(void)param;
+	t_mlx *mlx;
+
+	mlx = param;
+	if (mlx->line->idle)
+		mlx->line->rotatey -= 0.01;
+	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
+	handle_drawing(mlx);
+	return (0);
+}
 
 void	handle_offset(int dir, void *param)
 {
@@ -102,6 +115,14 @@ int		check_key(int key, void *param)
 	{
 		mlx->line->autooffset = !(mlx->line->autooffset);
 		handle_reset(mlx);
+	}
+	if (key == 2)
+	{
+		mlx->line->idle = !(mlx->line->idle);
+		if (mlx->line->idle)
+			mlx->line->rotatex = -0.3;
+		if (!mlx->line->idle)
+			handle_reset(mlx);
 	}
 	if (key == 1)
 		mlx->line->colors = !(mlx->line->colors);
@@ -210,6 +231,8 @@ int		mouse_move(int x, int y, void *param)
 		mlx->mousex = x;
 		mlx->mousey = y;
 	}
+	if (mlx->line->idle)
+		mlx->line->rotatey -= 0.01;
 	mlx->mousex = x;
 	mlx->mousey = y;
 	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
@@ -717,11 +740,12 @@ void	initialize_line(t_line *line, t_mlx *mlx)
 	line->pitch = mlx->s_map->biggestz * 0.1;
 	if (line->pitch > 10)
 		line->pitch = 10;
-	line->rotatex = 0;
+	line->rotatex = -0.3;
 	line->rotatey = 0;
 	line->rotatez = 0;
 	line->autooffset = 0;
 	line->colors = 0;
+	line->idle = 1;
 }
 
 void	handle_graphics(t_map *s_map)
@@ -744,7 +768,8 @@ void	handle_graphics(t_map *s_map)
 	mlx_hook(mlx->window, 4, 0, mouse_press, (void*)mlx);
 	mlx_hook(mlx->window, 5, 0, mouse_release, (void*)mlx);
 	mlx_hook(mlx->window, 6, 0, mouse_move, (void*)mlx);
-	//mlx_hook(mlx->window, 12, 0, handle_drawing, (void*)mlx);
+	mlx_hook(mlx->window, 12, 0, handle_idle, (void*)mlx);
+	mlx_loop_hook(mlx->init, handle_idle, (void*)mlx);
 	map_to_coordinates(mlx->s_map);
 	handle_drawing((void*)mlx);
 	mlx_loop(mlx->init);
