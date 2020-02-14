@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/04 14:41:33 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/13 18:09:45 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/14 12:46:10 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ typedef struct s_line
 	int			autooffset;
 	int			offsetx;
 	int			offsety;
-	int			roll;
 	int			iso;
 	double		isoangle;
 	double		pitch;
