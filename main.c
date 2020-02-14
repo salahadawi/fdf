@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/13 18:22:38 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/14 13:22:06 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,26 +40,35 @@ void	handle_offset(int dir, void *param)
 		mlx->line->offsetx -= 10;
 }
 
-void	handle_roll(int key, void *param)
-{
-	t_mlx *mlx;
-
-	mlx = param;
-	if (key == 86)
-		mlx->line->roll--;
-	if (key == 88)
-		mlx->line->roll++;
-}
-
 void	handle_pitch(int key, void *param)
 {
 	t_mlx *mlx;
 
 	mlx = param;
-	if (key == 91)
+	if (key == 85)
 		mlx->line->pitch += 0.1;
-	if (key == 84)
+	if (key == 83)
 		mlx->line->pitch -= 0.1;
+}
+void	handle_rotatex(int key, void *param)
+{
+	t_mlx *mlx;
+
+	mlx = param;
+	if (key == 91)
+		mlx->line->rotatex -= 0.03;
+	if (key == 84)
+		mlx->line->rotatex += 0.03;
+}
+void	handle_rotatey(int key, void *param)
+{
+	t_mlx *mlx;
+
+	mlx = param;
+	if (key == 86)
+		mlx->line->rotatey -= 0.03;
+	if (key == 88)
+		mlx->line->rotatey += 0.03;
 }
 
 void	handle_rotatez(int key, void *param)
@@ -68,20 +77,9 @@ void	handle_rotatez(int key, void *param)
 
 	mlx = param;
 	if (key == 89)
-		mlx->line->rotatez -= 0.05;
-	if (key == 92)
 		mlx->line->rotatez += 0.05;
-}
-
-void	handle_rotatex(int key, void *param)
-{
-	t_mlx *mlx;
-
-	mlx = param;
-	if (key == 83)
-		mlx->line->rotatex -= 0.01;
-	if (key == 85)
-		mlx->line->rotatex += 0.01;
+	if (key == 92)
+		mlx->line->rotatez -= 0.05;
 }
 
 void	handle_reset(t_mlx *mlx)
@@ -96,9 +94,8 @@ void	handle_reset(t_mlx *mlx)
 		mlx->line->offsetx += 200;
 		mlx->line->offsety += 200;
 	}
-	line->roll = 0;
-	line->pitch = 0.2;
-	line->rotatex = 0;
+	line->pitch = mlx->s_map->biggestz * 0.1;
+	line->rotatex = -0.3;
 	line->rotatey = 0;
 	line->rotatez = 0;
 	line->autooffset = 0;
@@ -112,11 +109,8 @@ int		check_key(int key, void *param)
 	if (key == 53)
 		exit(0);
 	if (key == 82)
-	{
-		mlx->line->autooffset = !(mlx->line->autooffset);
 		handle_reset(mlx);
-	}
-	if (key == 2)
+	if (key == 67)
 	{
 		mlx->line->idle = !(mlx->line->idle);
 		if (mlx->line->idle)
@@ -124,21 +118,21 @@ int		check_key(int key, void *param)
 		if (!mlx->line->idle)
 			handle_reset(mlx);
 	}
-	if (key == 1)
+	if (key == 75)
 		mlx->line->colors = !(mlx->line->colors);
 	if (key == 4)
 		mlx->hud = !(mlx->hud);
 	if (122 < key && key < 127)
 		handle_offset(126 - key, param);
 	if (key == 86 || key == 88)
-		handle_roll(key, param);
-	if (key == 91 || key == 84)
-		handle_pitch(key, param);
+		handle_rotatey(key, param);
 	if (key == 89 || key == 92)
 		handle_rotatez(key, param);
 	if (key == 83 || key == 85)
+		handle_pitch(key, param);
+	if (key == 84 || key == 91)
 		handle_rotatex(key, param);
-	if (key == 0)
+	if (key == 87)
 	{
 		if (!mlx->line->iso)
 		{
@@ -620,7 +614,7 @@ void	handle_line_draw(int xy[4], t_line *line, t_mlx *mlx)
 		line->x1 = map[xy[0] * 3 + xy[2] * mlx->s_map->cols * 3];// * line->zoom + line->offsetx;
 		line->x2 = map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3];// + line->roll * xy[3];// * line->zoom + line->offsetx;
 		line->y1 = map[xy[2] * mlx->s_map->cols * 3 + xy[0] * 3 + 1];// * line->zoom + line->offsety;
-		line->y2 = map[xy[3] * mlx->s_map->cols * 3 + xy[1] * 3 + 1] + line->roll * xy[1];// * line->zoom + line->offsety;
+		line->y2 = map[xy[3] * mlx->s_map->cols * 3 + xy[1] * 3 + 1];// + line->roll * xy[1];// * line->zoom + line->offsety;
 		line->z1 = map[xy[0] * 3 + xy[2] * mlx->s_map->cols * 3 + 2];
 		line->z2 = map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3 + 2];
 		//map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3] =
@@ -718,10 +712,24 @@ void	draw_background(t_mlx *mlx)
 void	draw_hud(t_mlx *mlx)
 {
 	if (!mlx->pro_type)
-		mlx_string_put(mlx->init, mlx->window, 30, 30, 0xFFFFFF, "Parallel Projection");
+		mlx_string_put(mlx->init, mlx->window, 20, 30, 0xFFFFFF, "Parallel Projection");
 	if (mlx->pro_type)
-		mlx_string_put(mlx->init, mlx->window, 30, 30, 0xFFFFFF, "Isometric Projection");
+		mlx_string_put(mlx->init, mlx->window, 20, 30, 0xFFFFFF, "Isometric Projection");
 	mlx_string_put(mlx->init, mlx->window, 1450 - ft_strlen(mlx->s_map->name) * 10, 950, 0xFFFFFF, mlx->s_map->name);
+	mlx_string_put(mlx->init, mlx->window, 20, 75, 0xFFFFFF, "1 / 3 - Decrease/Increase Z-axis");
+	mlx_string_put(mlx->init, mlx->window, 20, 100, 0xFFFFFF, "2 / 8 - Rotate X-axis");
+	mlx_string_put(mlx->init, mlx->window, 20, 125, 0xFFFFFF, "4 / 6 - Rotate Y-axis");
+	mlx_string_put(mlx->init, mlx->window, 20, 150, 0xFFFFFF, "7 / 9 - Rotate Z-axis");
+	mlx_string_put(mlx->init, mlx->window, 20, 195, 0xFFFFFF, "5 - Toggle view");
+	mlx_string_put(mlx->init, mlx->window, 20, 220, 0xFFFFFF, "0 - Reset view");
+	mlx_string_put(mlx->init, mlx->window, 20, 245, 0xFFFFFF, "* - Toggle autospin");
+	mlx_string_put(mlx->init, mlx->window, 20, 270, 0xFFFFFF, "/ - Toggle colours");
+	mlx_string_put(mlx->init, mlx->window, 20, 315, 0xFFFFFF, "X-axis:");
+	mlx_string_put(mlx->init, mlx->window, 20, 340, 0xFFFFFF, "Y-axis:");
+	mlx_string_put(mlx->init, mlx->window, 20, 365, 0xFFFFFF, "Z-axis:");
+	mlx_string_put(mlx->init, mlx->window, 100, 315, 0xFFFFFF, ft_itoa_double(mlx->line->rotatex * 57.33, 1));
+	mlx_string_put(mlx->init, mlx->window, 100, 340, 0xFFFFFF, ft_itoa_double(mlx->line->rotatey * 57.33, 1));
+	mlx_string_put(mlx->init, mlx->window, 100, 365, 0xFFFFFF, ft_itoa_double(mlx->line->rotatez * 57.33, 1));
 	//mlx_string_put(mlx->init, mlx->window, 30, 30, 0xFFFFFF, "Isometric Projection");
 }
 
@@ -736,7 +744,7 @@ int	handle_drawing(void *param)
 	mlx_put_image_to_window(mlx->init, mlx->window, mlx->image_ptr, 0, 0);
 	if (mlx->hud)
 		draw_hud(mlx);
-	mlx_string_put(mlx->init, mlx->window, 1250, 30, 0xFFFFFF, "Press H to toggle GUI");
+	mlx_string_put(mlx->init, mlx->window, 1250, 20, 0xFFFFFF, "Press H to toggle GUI");
 	return (0);
 }
 
@@ -752,7 +760,6 @@ void	initialize_line(t_line *line, t_mlx *mlx)
 	line->offsetx = 750;
 	line->offsety = 500;
 	line->iso = 0;
-	line->roll = 0;
 	line->pitch = mlx->s_map->biggestz * 0.1;
 	if (line->pitch > 10)
 		line->pitch = 10;
@@ -760,7 +767,7 @@ void	initialize_line(t_line *line, t_mlx *mlx)
 	line->rotatey = 0;
 	line->rotatez = 0;
 	line->autooffset = 0;
-	line->colors = 0;
+	line->colors = 1;
 	line->idle = 1;
 	mlx->hud = 1;
 	mlx->pro_type = 0;
@@ -814,3 +821,5 @@ int		main(int argc, char **argv)
 //add x, y z to screen
 //add projection type to screen when changed
 //change colors, maybe top=white, 0=orange, bottom=red
+//add gui
+//x, y and z axis should reset to 0 when going over 360 or -360
