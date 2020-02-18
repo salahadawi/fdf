@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/18 17:13:08 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/18 17:25:13 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -736,6 +736,7 @@ void	draw_background(t_mlx *mlx)
 
 void	draw_hud(t_mlx *mlx)
 {
+	char *str;
 	if (!mlx->pro_type)
 		mlx_string_put(mlx->init, mlx->window, 20, 30, 0xFFFFFF, "Parallel Projection");
 	if (mlx->pro_type)
@@ -753,10 +754,18 @@ void	draw_hud(t_mlx *mlx)
 	mlx_string_put(mlx->init, mlx->window, 20, 340, 0xFFFFFF, "Y-axis:");
 	mlx_string_put(mlx->init, mlx->window, 20, 365, 0xFFFFFF, "Z-axis:");
 	mlx_string_put(mlx->init, mlx->window, 20, 390, 0xFFFFFF, "Pitch:");
-	mlx_string_put(mlx->init, mlx->window, 100, 315, 0xFFFFFF, ft_itoa_double(mlx->line->rotatex * 57.33, 1));
-	mlx_string_put(mlx->init, mlx->window, 100, 340, 0xFFFFFF, ft_itoa_double(mlx->line->rotatey * 57.33, 1));
-	mlx_string_put(mlx->init, mlx->window, 100, 365, 0xFFFFFF, ft_itoa_double(mlx->line->rotatez * 57.33, 1));
-	mlx_string_put(mlx->init, mlx->window, 100, 390, 0xFFFFFF, ft_itoa_double(mlx->line->pitch, 1));
+	str = ft_itoa_double(mlx->line->rotatex * 57.33, 1);
+	mlx_string_put(mlx->init, mlx->window, 100, 315, 0xFFFFFF, str);
+	free(str);
+	str = ft_itoa_double(mlx->line->rotatey * 57.33, 1);
+	mlx_string_put(mlx->init, mlx->window, 100, 340, 0xFFFFFF, str);
+	free(str);
+	str = ft_itoa_double(mlx->line->rotatez * 57.33, 1);
+	mlx_string_put(mlx->init, mlx->window, 100, 365, 0xFFFFFF, str);
+	free(str);
+	str = ft_itoa_double(mlx->line->pitch, 1);
+	mlx_string_put(mlx->init, mlx->window, 100, 390, 0xFFFFFF, str);
+	free(str);
 	//mlx_string_put(mlx->init, mlx->window, 30, 30, 0xFFFFFF, "Isometric Projection");
 }
 
