@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/18 17:55:13 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/18 17:57:18 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -740,3 +740,6 @@ int		main(int argc, char **argv)
 	handle_graphics(s_map);
 	return (0);
 }
+
+//fix norm errors, maybe shorten code
+//maybe remove unnecessary map creation
