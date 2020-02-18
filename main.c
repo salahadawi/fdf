@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/18 17:25:13 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/18 17:55:13 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 int		handle_idle(void *param)
 {
-	(void)param;
 	t_mlx *mlx;
 
 	mlx = param;
@@ -24,7 +23,6 @@ int		handle_idle(void *param)
 		mlx->line->rotatey = 0;
 	if (mlx->line->rotatey < 0)
 		mlx->line->rotatey = 360 / 57.33;
-	//ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -54,6 +52,7 @@ void	handle_pitch(int key, void *param)
 	if (key == 83)
 		mlx->line->pitch -= 0.1;
 }
+
 void	handle_rotatex(int key, void *param)
 {
 	t_mlx *mlx;
@@ -68,6 +67,7 @@ void	handle_rotatex(int key, void *param)
 	if (mlx->line->rotatex < 0)
 		mlx->line->rotatex = 358.5 / 57.33;
 }
+
 void	handle_rotatey(int key, void *param)
 {
 	t_mlx *mlx;
@@ -131,8 +131,6 @@ int		check_key(int key, void *param)
 		mlx->line->idle = !(mlx->line->idle);
 		if (mlx->line->idle)
 			mlx->line->rotatex = 6;
-		if (!mlx->line->idle)
-			handle_reset(mlx);//(void)handle_reset;//handle_reset(mlx);
 	}
 	if (key == 75)
 		mlx->line->colors = !(mlx->line->colors);
@@ -166,7 +164,6 @@ int		check_key(int key, void *param)
 		mlx->line->iso = !(mlx->line->iso);
 		mlx->pro_type = !(mlx->pro_type);
 	}
-	//ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -188,7 +185,6 @@ int		mouse_press(int key, int x, int y, void *param)
 		mlx->line->zoom += 0.5;
 	if (key == 5 && mlx->line->zoom > 0.6)
 		mlx->line->zoom -= 0.5;
-	//ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -204,7 +200,6 @@ int		mouse_release(int key, int x, int y, void *param)
 		mlx->mouse1 = 0;
 	if (key == 2)
 		mlx->mouse2 = 0;
-	//ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -218,12 +213,8 @@ int		mouse_move(int x, int y, void *param)
 	{
 		if (x != mlx->mousex)
 			mlx->line->offsetx += x - mlx->mousex;
-		// else if (x > mlx->mousex)
-		// 	mlx->line->offsetx -= mlx->mousex - x;
 		if (y != mlx->mousey)
 			mlx->line->offsety += y - mlx->mousey;
-		// else if (y > mlx->mousey)
-		// 	mlx->line->offsety -= mlx->mousey - y;
 		mlx->mousex = x;
 		mlx->mousey = y;
 	}
@@ -256,7 +247,6 @@ int		mouse_move(int x, int y, void *param)
 		mlx->line->rotatey = 0;
 	if (mlx->line->rotatey < 0)
 		mlx->line->rotatey = 360 / 57.33;
-	//ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -280,18 +270,18 @@ void	handle_error(int code)
 
 void	draw_pixel(int x, int y, int color, t_mlx *mlx)
 {
-	int R;
-	int G;
-	int B;
+	int r;
+	int g;
+	int b;
 
 	if (x <= 0 || y <= 0 || WINDOW_WIDTH <= x || WINDOW_HEIGHT <= y)
 		return ;
-	B = color % 256;
-	G = color/256 % 256;
-	R = color/256/256 % 256;
-	mlx->image[x * 4 + y * mlx->size_line] = R;
-	mlx->image[x * 4 + y * mlx->size_line + 1] = G;
-	mlx->image[x * 4 + y * mlx->size_line + 2] = B;
+	b = color % 256;
+	g = color / 256 % 256;
+	r = color / 256 / 256 % 256;
+	mlx->image[x * 4 + y * mlx->size_line] = r;
+	mlx->image[x * 4 + y * mlx->size_line + 1] = g;
+	mlx->image[x * 4 + y * mlx->size_line + 2] = b;
 }
 
 void	plot_line_low(t_line *line, t_mlx *mlx)
@@ -299,7 +289,7 @@ void	plot_line_low(t_line *line, t_mlx *mlx)
 	int dxy[2];
 	int xy[2];
 	int yi;
-	int D;
+	int d;
 
 	dxy[0] = line->x2 - line->x1;
 	dxy[1] = line->y2 - line->y1;
@@ -309,19 +299,19 @@ void	plot_line_low(t_line *line, t_mlx *mlx)
 		yi = -1;
 		dxy[1] *= -1;
 	}
-	D = 2 * dxy[1] - dxy[0];
+	d = 2 * dxy[1] - dxy[0];
 	xy[0] = line->x1;
 	xy[1] = line->y1;
 	while (xy[0] <= line->x2)
 	{
 		draw_pixel(xy[0], xy[1], line->color, mlx);
-		if (D > 0)
+		if (d > 0)
 		{
 			xy[1] += yi;
-			D -= 2 * dxy[0];
+			d -= 2 * dxy[0];
 		}
 		xy[0]++;
-		D += 2 * dxy[1];
+		d += 2 * dxy[1];
 	}
 }
 
@@ -330,7 +320,7 @@ void	plot_line_high(t_line *line, t_mlx *mlx)
 	int dxy[2];
 	int xy[2];
 	int xi;
-	int D;
+	int d;
 
 	dxy[0] = line->x2 - line->x1;
 	dxy[1] = line->y2 - line->y1;
@@ -340,19 +330,19 @@ void	plot_line_high(t_line *line, t_mlx *mlx)
 		xi = -1;
 		dxy[0] *= -1;
 	}
-	D = 2 * dxy[0] - dxy[1];
+	d = 2 * dxy[0] - dxy[1];
 	xy[0] = line->x1;
 	xy[1] = line->y1;
 	while (xy[1] <= line->y2)
 	{
 		draw_pixel(xy[0], xy[1], line->color, mlx);
-		if (D > 0)
+		if (d > 0)
 		{
 			xy[0] += xi;
-			D -= 2 * dxy[1];
+			d -= 2 * dxy[1];
 		}
 		xy[1]++;
-		D += 2 * dxy[0];
+		d += 2 * dxy[0];
 	}
 }
 
@@ -370,27 +360,17 @@ void	swap_points(t_line *line)
 
 void	plot_line(t_line *line, t_mlx *mlx)
 {
-	if (abs(line->y2 -line->y1) < abs(line->x2 - line->x1))
+	if (abs(line->y2 - line->y1) < abs(line->x2 - line->x1))
 	{
 		if (line->x1 > line->x2)
-		{
 			swap_points(line);
-			plot_line_low(line, mlx);
-			//swap_points(line);
-		}
-		else
-			plot_line_low(line, mlx);
+		plot_line_low(line, mlx);
 	}
 	else
 	{
 		if (line->y1 > line->y2)
-		{
 			swap_points(line);
-			plot_line_high(line, mlx);
-			//swap_points(line);
-		}
-		else
-			plot_line_high(line, mlx);
+		plot_line_high(line, mlx);
 	}
 }
 
@@ -412,22 +392,6 @@ void	handle_color_high(t_line *line, double d)
 		line->color = 0x002deb;
 	else if (d <= 1)
 		line->color = 0x0000ff;
-	// if (d < 0.125)
-	// 	line->color = 0x087cff;
-	// else if (d < 0.25)
-	// 	line->color = 0x0096ff;
-	// else if (d < 0.375)
-	// 	line->color = 0x00a5ff;
-	// else if (d < 0.5)
-	// 	line->color = 0x00b4ff;
-	// else if (d < 0.625)
-	// 	line->color = 0xafffff;
-	// else if (d < 0.75)
-	// 	line->color = 0xc8ffff;
-	// else if (d < 0.875)
-	// 	line->color = 0xe1ffff;
-	// else if (d <= 1)
-	// 	line->color = 0xffffff;
 }
 
 void	handle_color_low(t_line *line, double d)
@@ -448,42 +412,26 @@ void	handle_color_low(t_line *line, double d)
 		line->color = 0xeb2d00;
 	else if (d >= -1)
 		line->color = 0xff0000;
-	// if (d > -0.125)
-	// 	line->color = 0x008cff;
-	// else if (d > -0.25)
-	// 	line->color = 0x0078ff;
-	// else if (d > -0.375)
-	// 	line->color = 0x0064ff;
-	// else if (d > -0.5)
-	// 	line->color = 0x0050ff;
-	// else if (d > -0.625)
-	// 	line->color = 0x003cff;
-	// else if (d > -0.75)
-	// 	line->color = 0x0028ff;
-	// else if (d > -0.875)
-	// 	line->color = 0x0014ff;
-	// else if (d >= -1)
-	// 	line->color = 0x0000ff;
 }
 
 void	handle_simple_color(t_line *line)
 {
 	if (line->z1 && line->z2)
 	{
-			if (line->z1 + line->z2 > 0)
-				line->color = 0x0000FF;
-			else
-				line->color = 0xFF0000;
+		if (line->z1 + line->z2 > 0)
+			line->color = 0x0000FF;
+		else
+			line->color = 0xFF0000;
 	}
 	else if (line->z1 || line->z2)
 	{
-			if (line->z1 > 0 || line->z2 > 0)
-				line->color = 0x0000FF;
-			else
-				line->color = 0xFF0000;
+		if (line->z1 > 0 || line->z2 > 0)
+			line->color = 0x0000FF;
+		else
+			line->color = 0xFF0000;
 	}
 	else
-			line->color = 0xFFFFFF;
+		line->color = 0xFFFFFF;
 }
 
 void	handle_color(t_line *line, t_mlx *mlx)
@@ -502,52 +450,19 @@ void	handle_color(t_line *line, t_mlx *mlx)
 	else if (d < 0)
 		handle_color_low(line, d);
 	else
-		line->color = 0xa4ffa4;//line->color = 0x0078ff;
-
+		line->color = 0xa4ffa4;
 }
 
 void	draw_line(t_line *line, t_mlx *mlx)
 {
 	int *map;
-	//double d;
-	//int x;
-	//int y;
 
-	// if (line->x1 > line->x2)
-	// {
-	// 	x = line->x2;
-	// 	line->x2 = line->x1;
-	// 	line->x1 = x;
-	// }
-	// x = line->x1;
-	// while (x < line->x2)
-	// {
-	// 	y = line->y1 + (line->y2 - line->y1) * (x - line->x1) / (line->x2 - line->x1);
-	// 	draw_pixel(x, y, line->color, mlx);
-	// 	x++;
-	// }
 	if (line->autooffset)
 	{
-		line->offsetx = 750 - mlx->s_map->cols/2 * 5 - mlx->s_map->mapxy[0];
-		line->offsety = 500 - mlx->s_map->rows/2 * 5 - mlx->s_map->mapxy[1];
+		line->offsetx = 750 - mlx->s_map->cols / 2 * 5 - mlx->s_map->mapxy[0];
+		line->offsety = 500 - mlx->s_map->rows / 2 * 5 - mlx->s_map->mapxy[1];
 	}
 	map = mlx->s_map->mapxy;
-	// if (line->z1 && line->z2)
-	// 	line->color = 0x0000FF;//0xFFFFFFF - line->z1 * 1000;
-	// else if (line->z1)
-	// {
-	// 	d = line->z1/2;
-	// 	d = d / mlx->s_map->biggestz;
-	// 	line->color = d * 255;
-	// }
-	// else if (line->z2)
-	// {
-	// 	d = line->z2/2;
-	// 	d = d / mlx->s_map->biggestz;
-	// 	line->color = d * 255;
-	// }
-	// else
-	// 	line->color = 0xFFFFFFF;
 	handle_color(line, mlx);
 	line->x1 = line->x1 * line->zoom;
 	line->x2 = line->x2 * line->zoom;
@@ -567,7 +482,6 @@ void	draw_line(t_line *line, t_mlx *mlx)
 	line->x2 = line->x2 + line->offsetx;
 	line->y1 = line->y1 + line->offsety;
 	line->y2 = line->y2 + line->offsety;
-	//ft_printf("x:%d, y:%d, x2:%d, y2:%d, z1:%d, z2:%d\n", line->x1, line->y1, line->x2, line->y2, line->z1, line->z2);
 	plot_line(line, mlx);
 }
 
@@ -633,36 +547,16 @@ void	rotate_z(t_line *line)
 
 void	handle_line_draw(int xy[4], t_line *line, t_mlx *mlx)
 {
-		int *map;
+	int *map;
 
-		map = mlx->s_map->mapxy;
-		line->x1 = map[xy[0] * 3 + xy[2] * mlx->s_map->cols * 3];// * line->zoom + line->offsetx;
-		line->x2 = map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3];// + line->roll * xy[3];// * line->zoom + line->offsetx;
-		line->y1 = map[xy[2] * mlx->s_map->cols * 3 + xy[0] * 3 + 1];// * line->zoom + line->offsety;
-		line->y2 = map[xy[3] * mlx->s_map->cols * 3 + xy[1] * 3 + 1];// + line->roll * xy[1];// * line->zoom + line->offsety;
-		line->z1 = map[xy[0] * 3 + xy[2] * mlx->s_map->cols * 3 + 2];
-		line->z2 = map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3 + 2];
-		//map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3] =
-
-		////("testix:%d, ix2:%d, iy:%d, iy2:%d, iz1:%d, iz2:%d\n", xy[0] * 3, xy[1] * 3, xy[0] * 3 + 1, xy[1] * 3 + 1, xy[0] * 3 + 2, xy[1] * 3 + 2);
-		////("ix:%d, ix2:%d, iy:%d, iy2:%d, iz1:%d, iz2:%d\n", map[xy[0] * 3], map[xy[1] * 3], map[xy[0] * 3 + 1], map[xy[1] * 3 + 1], map[xy[0] * 3 + 2], map[xy[1] * 3 + 1]);
-		//ft_printf("x:%d, y:%d, x2:%d, y2:%d, z1:%d, z2:%d\n", line->x1, line->y1, line->x2, line->y2, line->z1, line->z2);
-		if (xy[2] == xy[3])
-		{
-			map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3] = line->x2;
-			map[xy[3] * mlx->s_map->cols * 3 + xy[1] * 3 + 1] = line->y2;
-		}
-		// if (xy[0] == xy[1])
-		// {
-		//  	map[xy[0] * 3 + xy[2] * mlx->s_map->cols * 3] = line->x1;
-		// 	map[xy[2] * mlx->s_map->cols * 3 + xy[0] * 3 + 1] = line->y1;
-		// }
-		// if (xy[2] == xy[3])
-		// {
-		// 	map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3] = line->x2;
-		// 	map[xy[3] * mlx->s_map->cols * 3 + xy[1] * 3 + 1] = line->y2;
-		// }
-		draw_line(line, mlx);
+	map = mlx->s_map->mapxy;
+	line->x1 = map[xy[0] * 3 + xy[2] * mlx->s_map->cols * 3];
+	line->x2 = map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3];
+	line->y1 = map[xy[2] * mlx->s_map->cols * 3 + xy[0] * 3 + 1];
+	line->y2 = map[xy[3] * mlx->s_map->cols * 3 + xy[1] * 3 + 1];
+	line->z1 = map[xy[0] * 3 + xy[2] * mlx->s_map->cols * 3 + 2];
+	line->z2 = map[xy[1] * 3 + xy[3] * mlx->s_map->cols * 3 + 2];
+	draw_line(line, mlx);
 }
 
 void	draw_map(t_line *line, t_mlx *mlx)
@@ -697,20 +591,17 @@ void	map_to_coordinates(t_map *s_map)
 	if (!(s_map->mapxy = (int*)malloc(sizeof(int) * s_map->rows * s_map->cols * 3)))
 		handle_error(3);
 	i = 0;
-	y = s_map->rows/2 * -5;
+	y = s_map->rows / 2 * -5;
 	count = 0;
 	while (i < s_map->rows)
 	{
 		j = 0;
-		x = s_map->cols/2 * -5;
+		x = s_map->cols / 2 * -5;
 		while (j < s_map->cols)
 		{
 			s_map->mapxy[count] = x;
 			s_map->mapxy[count + 1] = y;
-			////("%d, %d, %d\n", count - 2, count - 1, count);
-
 			s_map->mapxy[count + 2] = s_map->map[i][j];
-			//ft_printf("%d, %d, %d\n", x, y, s_map->map[i][j]);
 			j++;
 			x += 5;
 			count += 3;
@@ -737,6 +628,7 @@ void	draw_background(t_mlx *mlx)
 void	draw_hud(t_mlx *mlx)
 {
 	char *str;
+
 	if (!mlx->pro_type)
 		mlx_string_put(mlx->init, mlx->window, 20, 30, 0xFFFFFF, "Parallel Projection");
 	if (mlx->pro_type)
@@ -766,15 +658,13 @@ void	draw_hud(t_mlx *mlx)
 	str = ft_itoa_double(mlx->line->pitch, 1);
 	mlx_string_put(mlx->init, mlx->window, 100, 390, 0xFFFFFF, str);
 	free(str);
-	//mlx_string_put(mlx->init, mlx->window, 30, 30, 0xFFFFFF, "Isometric Projection");
 }
 
-int	handle_drawing(void *param)
+int		handle_drawing(void *param)
 {
 	t_mlx *mlx;
 
 	mlx = param;
-	//map_to_coordinates(mlx->s_map);
 	draw_background(mlx);
 	draw_map(mlx->line, mlx);
 	mlx_put_image_to_window(mlx->init, mlx->window, mlx->image_ptr, 0, 0);
@@ -812,7 +702,7 @@ void	initialize_line(t_line *line, t_mlx *mlx)
 void	handle_graphics(t_map *s_map)
 {
 	t_mlx	*mlx;
-	t_line *line;
+	t_line	*line;
 
 	if (!(mlx = (t_mlx*)malloc(sizeof(t_mlx))))
 		handle_error(3);
@@ -850,11 +740,3 @@ int		main(int argc, char **argv)
 	handle_graphics(s_map);
 	return (0);
 }
-
-//create function to check highest altitude in file, then change color according to difference to max altitude :)
-//add function to change map coordinates if coordinates go over screen
-
-//add x, y z to screen
-//add projection type to screen when changed
-//change colors, maybe top=white, 0=orange, bottom=red
-//add gui

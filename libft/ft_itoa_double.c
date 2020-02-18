@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/21 16:14:45 by sadawi            #+#    #+#             */
-/*   Updated: 2019/12/17 16:26:34 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/18 17:38:25 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,14 +89,14 @@ char		*ft_itoa_double(long double d, int precision)
 	n = (unsigned long)d;
 	d -= (unsigned long)d;
 	handle_rounding(&n, &d, precision);
-	ft_strcat(arr, ft_itoa_base_ul(n, 10));
+	ft_strcatfree(arr, ft_itoa_base_ul(n, 10));
 	if (precision > 0)
 	{
 		ft_strcat(arr, ".");
 		precision -= ft_ulonglen((unsigned long)d);
 		while (precision-- > 0)
 			ft_strcat(arr, "0");
-		ft_strcat(arr, ft_itoa_base_ul((unsigned long)d, 10));
+		ft_strcatfree(arr, ft_itoa_base_ul((unsigned long)d, 10));
 	}
 	return (arr);
 }
