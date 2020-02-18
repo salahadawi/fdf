@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/29 14:42:42 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/14 13:22:06 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/18 17:13:08 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,11 @@ int		handle_idle(void *param)
 	mlx = param;
 	if (mlx->line->idle)
 		mlx->line->rotatey -= 0.01;
-	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
+	if (mlx->line->rotatey > 360 / 57.33)
+		mlx->line->rotatey = 0;
+	if (mlx->line->rotatey < 0)
+		mlx->line->rotatey = 360 / 57.33;
+	//ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -59,6 +63,10 @@ void	handle_rotatex(int key, void *param)
 		mlx->line->rotatex -= 0.03;
 	if (key == 84)
 		mlx->line->rotatex += 0.03;
+	if (mlx->line->rotatex > 360 / 57.33)
+		mlx->line->rotatex = 0;
+	if (mlx->line->rotatex < 0)
+		mlx->line->rotatex = 358.5 / 57.33;
 }
 void	handle_rotatey(int key, void *param)
 {
@@ -69,6 +77,10 @@ void	handle_rotatey(int key, void *param)
 		mlx->line->rotatey -= 0.03;
 	if (key == 88)
 		mlx->line->rotatey += 0.03;
+	if (mlx->line->rotatey > 360 / 57.33)
+		mlx->line->rotatey = 0;
+	if (mlx->line->rotatey < 0)
+		mlx->line->rotatey = 358.5 / 57.33;
 }
 
 void	handle_rotatez(int key, void *param)
@@ -80,6 +92,10 @@ void	handle_rotatez(int key, void *param)
 		mlx->line->rotatez += 0.05;
 	if (key == 92)
 		mlx->line->rotatez -= 0.05;
+	if (mlx->line->rotatez > 360 / 57.33)
+		mlx->line->rotatez = 0;
+	if (mlx->line->rotatez < 0)
+		mlx->line->rotatez = 357 / 57.33;
 }
 
 void	handle_reset(t_mlx *mlx)
@@ -95,7 +111,7 @@ void	handle_reset(t_mlx *mlx)
 		mlx->line->offsety += 200;
 	}
 	line->pitch = mlx->s_map->biggestz * 0.1;
-	line->rotatex = -0.3;
+	line->rotatex = 6;
 	line->rotatey = 0;
 	line->rotatez = 0;
 	line->autooffset = 0;
@@ -114,9 +130,9 @@ int		check_key(int key, void *param)
 	{
 		mlx->line->idle = !(mlx->line->idle);
 		if (mlx->line->idle)
-			mlx->line->rotatex = -0.3;
+			mlx->line->rotatex = 6;
 		if (!mlx->line->idle)
-			handle_reset(mlx);
+			handle_reset(mlx);//(void)handle_reset;//handle_reset(mlx);
 	}
 	if (key == 75)
 		mlx->line->colors = !(mlx->line->colors);
@@ -150,7 +166,7 @@ int		check_key(int key, void *param)
 		mlx->line->iso = !(mlx->line->iso);
 		mlx->pro_type = !(mlx->pro_type);
 	}
-	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
+	//ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -172,7 +188,7 @@ int		mouse_press(int key, int x, int y, void *param)
 		mlx->line->zoom += 0.5;
 	if (key == 5 && mlx->line->zoom > 0.6)
 		mlx->line->zoom -= 0.5;
-	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
+	//ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -188,7 +204,7 @@ int		mouse_release(int key, int x, int y, void *param)
 		mlx->mouse1 = 0;
 	if (key == 2)
 		mlx->mouse2 = 0;
-	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
+	//ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -200,14 +216,14 @@ int		mouse_move(int x, int y, void *param)
 	mlx = param;
 	if (mlx->mouse1)
 	{
-		if (x > mlx->mousex)
+		if (x != mlx->mousex)
 			mlx->line->offsetx += x - mlx->mousex;
-		else if (x < mlx->mousex)
-			mlx->line->offsetx -= mlx->mousex - x;
-		if (y > mlx->mousey)
+		// else if (x > mlx->mousex)
+		// 	mlx->line->offsetx -= mlx->mousex - x;
+		if (y != mlx->mousey)
 			mlx->line->offsety += y - mlx->mousey;
-		else if (y < mlx->mousey)
-			mlx->line->offsety -= mlx->mousey - y;
+		// else if (y > mlx->mousey)
+		// 	mlx->line->offsety -= mlx->mousey - y;
 		mlx->mousex = x;
 		mlx->mousey = y;
 	}
@@ -232,7 +248,15 @@ int		mouse_move(int x, int y, void *param)
 		mlx->line->rotatey -= 0.01;
 	mlx->mousex = x;
 	mlx->mousey = y;
-	ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
+	if (mlx->line->rotatex > 360 / 57.33)
+		mlx->line->rotatex = 0;
+	if (mlx->line->rotatex < 0)
+		mlx->line->rotatex = 360 / 57.33;
+	if (mlx->line->rotatey > 360 / 57.33)
+		mlx->line->rotatey = 0;
+	if (mlx->line->rotatey < 0)
+		mlx->line->rotatey = 360 / 57.33;
+	//ft_memset(mlx->image, 0, WINDOW_HEIGHT * WINDOW_WIDTH * 4);
 	handle_drawing(mlx);
 	return (0);
 }
@@ -481,6 +505,7 @@ void	handle_color(t_line *line, t_mlx *mlx)
 		line->color = 0xa4ffa4;//line->color = 0x0078ff;
 
 }
+
 void	draw_line(t_line *line, t_mlx *mlx)
 {
 	int *map;
@@ -716,7 +741,7 @@ void	draw_hud(t_mlx *mlx)
 	if (mlx->pro_type)
 		mlx_string_put(mlx->init, mlx->window, 20, 30, 0xFFFFFF, "Isometric Projection");
 	mlx_string_put(mlx->init, mlx->window, 1450 - ft_strlen(mlx->s_map->name) * 10, 950, 0xFFFFFF, mlx->s_map->name);
-	mlx_string_put(mlx->init, mlx->window, 20, 75, 0xFFFFFF, "1 / 3 - Decrease/Increase Z-axis");
+	mlx_string_put(mlx->init, mlx->window, 20, 75, 0xFFFFFF, "1 / 3 - Change pitch");
 	mlx_string_put(mlx->init, mlx->window, 20, 100, 0xFFFFFF, "2 / 8 - Rotate X-axis");
 	mlx_string_put(mlx->init, mlx->window, 20, 125, 0xFFFFFF, "4 / 6 - Rotate Y-axis");
 	mlx_string_put(mlx->init, mlx->window, 20, 150, 0xFFFFFF, "7 / 9 - Rotate Z-axis");
@@ -727,9 +752,11 @@ void	draw_hud(t_mlx *mlx)
 	mlx_string_put(mlx->init, mlx->window, 20, 315, 0xFFFFFF, "X-axis:");
 	mlx_string_put(mlx->init, mlx->window, 20, 340, 0xFFFFFF, "Y-axis:");
 	mlx_string_put(mlx->init, mlx->window, 20, 365, 0xFFFFFF, "Z-axis:");
+	mlx_string_put(mlx->init, mlx->window, 20, 390, 0xFFFFFF, "Pitch:");
 	mlx_string_put(mlx->init, mlx->window, 100, 315, 0xFFFFFF, ft_itoa_double(mlx->line->rotatex * 57.33, 1));
 	mlx_string_put(mlx->init, mlx->window, 100, 340, 0xFFFFFF, ft_itoa_double(mlx->line->rotatey * 57.33, 1));
 	mlx_string_put(mlx->init, mlx->window, 100, 365, 0xFFFFFF, ft_itoa_double(mlx->line->rotatez * 57.33, 1));
+	mlx_string_put(mlx->init, mlx->window, 100, 390, 0xFFFFFF, ft_itoa_double(mlx->line->pitch, 1));
 	//mlx_string_put(mlx->init, mlx->window, 30, 30, 0xFFFFFF, "Isometric Projection");
 }
 
@@ -763,7 +790,7 @@ void	initialize_line(t_line *line, t_mlx *mlx)
 	line->pitch = mlx->s_map->biggestz * 0.1;
 	if (line->pitch > 10)
 		line->pitch = 10;
-	line->rotatex = -0.3;
+	line->rotatex = 6;
 	line->rotatey = 0;
 	line->rotatez = 0;
 	line->autooffset = 0;
@@ -822,4 +849,3 @@ int		main(int argc, char **argv)
 //add projection type to screen when changed
 //change colors, maybe top=white, 0=orange, bottom=red
 //add gui
-//x, y and z axis should reset to 0 when going over 360 or -360
