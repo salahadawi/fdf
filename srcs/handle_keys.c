@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/19 16:26:51 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/19 16:33:11 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/19 17:10:17 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int		handle_idle(t_mlx *mlx)
 {
 	if (mlx->line->idle)
-		mlx->line->rotatey -= 0.01;
+		mlx->line->rotatey -= 0.005;
 	check_360(mlx->line);
 	handle_drawing(mlx);
 	return (0);

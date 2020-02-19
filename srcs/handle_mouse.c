@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/19 16:00:15 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/19 16:22:48 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/19 17:11:28 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int		mouse_move(int x, int y, void *param)
 	if (mlx->mouse2)
 		handle_mouse2_move(x, y, mlx);
 	if (mlx->line->idle)
-		mlx->line->rotatey -= 0.01;
+		mlx->line->rotatey -= 0.005;
 	mlx->mousex = x;
 	mlx->mousey = y;
 	check_360(mlx->line);
