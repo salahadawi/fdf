@@ -6,18 +6,17 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/05 13:56:50 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/13 16:30:05 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/19 16:23:05 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fdf.h"
+#include "../includes/fdf.h"
 
 void	store_map(char *file, t_map *s_map)
 {
-	int fd;
-	char *line;
+	int		fd;
+	char	*line;
 
-	//fix to malloc correct amount of rows
 	s_map->rows = 0;
 	s_map->cols = 0;
 	if ((fd = open(file, O_RDONLY)) == -1)
@@ -41,13 +40,9 @@ void	store_map_line(char *line, t_map *s_map)
 	i = 0;
 	col = 0;
 	check_line(line);
-	if (!(count = count_ints(line)))
-		handle_error(2);
-	if (s_map->cols)
-		if (count != s_map->cols)
-			handle_error(2);
+	count = count_ints(line, s_map);
 	if (!(s_map->map[s_map->rows] = (int*)malloc(sizeof(int) * count)))
-        handle_error(3);
+		handle_error(3);
 	while (line[i])
 	{
 		while (line[i] == ' ')
@@ -71,12 +66,12 @@ void	malloc_extra_row(t_map *s_map)
 	int i;
 
 	if (!(tmp = (int**)malloc(sizeof(int*) * (s_map->rows))))
-        handle_error(3);
+		handle_error(3);
 	ft_memcpy(tmp, s_map->map, sizeof(int**) * s_map->rows);
 	if (s_map->rows)
 		free(s_map->map);
 	if (!(s_map->map = (int**)malloc(sizeof(int*) * (s_map->rows + 1))))
-        handle_error(3);
+		handle_error(3);
 	i = 0;
 	while (i < s_map->rows)
 	{
@@ -86,55 +81,31 @@ void	malloc_extra_row(t_map *s_map)
 	free(tmp);
 }
 
-void	check_line(char *line)
+void	map_to_coordinates(t_map *s_map)
 {
 	int i;
-
-	i = 0;
-	while (line[i])
-	{
-		if (!ft_isdigit(line[i]) && line[i] != ' ' && !ft_isdigit_neg(&line[i]))
-			handle_error(2);
-		i++;
-	}
-}
-
-int		bigger_than_int(char *line)
-{
-	int i;
-
-	i = 0;
-	while (ft_isdigit(line[i]))
-		i++;
-	if (i == 10)
-	{
-		if (ft_atoilong(&line[0]) > 2147483647)
-			return (1);
-	}
-	return !(i < 11);
-}
-
-int		count_ints(char *line)
-{
-	int i;
+	int j;
+	int x;
+	int y;
 	int count;
 
-	i = 0;
+	if (!(s_map->mapxy = (int*)malloc(4 * s_map->rows * s_map->cols * 3)))
+		handle_error(3);
+	i = -1;
+	y = s_map->rows / 2 * -5;
 	count = 0;
-	while (line[i])
+	while (++i < s_map->rows)
 	{
-		while (line[i] == ' ' && line[i])
-			i++;
-		if (ft_isdigit(line[i]) || ft_isdigit_neg(&line[i]))
+		j = -1;
+		x = s_map->cols / 2 * -5;
+		while (++j < s_map->cols)
 		{
-			if (line[i] == '-')
-				i++;
-			if (bigger_than_int(&line[i]))
-				handle_error(2);
-			while (ft_isdigit(line[i]))
-				i++;
-			count++;
+			s_map->mapxy[count] = x;
+			s_map->mapxy[count + 1] = y;
+			s_map->mapxy[count + 2] = s_map->map[i][j];
+			x += 5;
+			count += 3;
 		}
+		y += 5;
 	}
-	return (count);
 }
