@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/05 13:56:50 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/19 16:23:05 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/19 17:23:04 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ void	store_map(char *file, t_map *s_map)
 		store_map_line(line, s_map);
 		free(line);
 	}
+	if (s_map->rows == 0)
+		handle_error(2);
 	close(fd);
 }
 
