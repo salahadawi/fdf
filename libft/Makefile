@@ -6,7 +6,7 @@
 #    By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/16 18:05:28 by sadawi            #+#    #+#              #
-#    Updated: 2020/02/18 17:38:56 by sadawi           ###   ########.fr        #
+#    Updated: 2020/02/19 16:54:43 by sadawi           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,8 +35,10 @@ OBJS = *.o
 all: $(NAME)
 
 $(NAME): libft.h
+	@echo Compiling $(NAME)...
 	@gcc -c -Wall -Werror -Wextra $(SRCS)
 	@ar rc $(NAME) $(OBJS)
+	@echo $(NAME) compiled succesfully!
 
 clean:
 	@/bin/rm -f $(OBJS)
