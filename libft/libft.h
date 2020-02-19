@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 16:27:35 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/18 17:39:16 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/19 17:33:34 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,6 +180,6 @@ char				*ft_strjoinfree(char *s1, char *s2);
 
 int					ft_isdigit_neg(char *str);
 
-char	*ft_strcatfree(char *s1, const char *s2);
+char				*ft_strcatfree(char *s1, const char *s2);
 
 #endif
