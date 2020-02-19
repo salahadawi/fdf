@@ -6,7 +6,7 @@
 /*   By: sadawi <sadawi@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/19 16:07:36 by sadawi            #+#    #+#             */
-/*   Updated: 2020/02/19 16:22:24 by sadawi           ###   ########.fr       */
+/*   Updated: 2020/02/19 17:16:01 by sadawi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,14 @@ void	draw_gui(t_mlx *mlx)
 	mlxstr(mlx, 20, 220, "0 - Reset view");
 	mlxstr(mlx, 20, 245, "* - Toggle autospin");
 	mlxstr(mlx, 20, 270, "/ - Toggle colours");
-	mlxstr(mlx, 20, 315, "X-axis:");
-	mlxstr(mlx, 20, 340, "Y-axis:");
-	mlxstr(mlx, 20, 365, "Z-axis:");
-	mlxstr(mlx, 20, 390, "Pitch:");
-	draw_gui_double(mlx, 100, 315, mlx->line->rotatex * 57.33);
-	draw_gui_double(mlx, 100, 340, mlx->line->rotatey * 57.33);
-	draw_gui_double(mlx, 100, 365, mlx->line->rotatez * 57.33);
-	draw_gui_double(mlx, 100, 390, mlx->line->pitch);
+	mlxstr(mlx, 20, 315, "Mouse wheel - Zoom in/out");
+	mlxstr(mlx, 20, 340, "Arrow keys - Move map");
+	mlxstr(mlx, 20, 385, "X-axis:");
+	mlxstr(mlx, 20, 410, "Y-axis:");
+	mlxstr(mlx, 20, 435, "Z-axis:");
+	mlxstr(mlx, 20, 460, "Pitch:");
+	draw_gui_double(mlx, 100, 385, mlx->line->rotatex * 57.33);
+	draw_gui_double(mlx, 100, 410, mlx->line->rotatey * 57.33);
+	draw_gui_double(mlx, 100, 435, mlx->line->rotatez * 57.33);
+	draw_gui_double(mlx, 100, 460, mlx->line->pitch);
 }
