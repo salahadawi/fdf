@@ -1,6 +1,7 @@
 # fdf - Visualizing “iron wire” meshing in 3D.
 
 The aim of this project was to take a file as input, and draw a 3D visualization into a graphic window based on that file.
+
 As a bonus, this model can be rotated in 3D space.
 
 ![42-3D-view](https://github.com/salahadawi/fdf/blob/master/images/42-3D.png)
