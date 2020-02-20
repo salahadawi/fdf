@@ -3,8 +3,8 @@
 The aim of this project was to take a file as input, and draw a 3D visualization into a graphic window based on that file.
 
 ![fdf-3D-view](https://github.com/salahadawi/fdf/blob/master/images/42-3D.png)
-<img src="https://github.com/salahadawi/fdf/blob/master/images/42-3D.png" width="400" height="150">
-<img src="https://github.com/salahadawi/fdf/blob/master/images/42-3D.png" width="400" height="150">
+<img src="https://github.com/salahadawi/fdf/blob/master/images/42-2D.png" width="50%" height="50%">
+<img src="https://github.com/salahadawi/fdf/blob/master/images/42-ISO.png" width="50%" height="50%">
 # Features
 * Full 3D rotation
 
