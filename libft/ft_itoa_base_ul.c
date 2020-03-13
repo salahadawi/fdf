@@ -18,8 +18,6 @@ static int	ft_nbrlen_base(unsigned long n, int base)
 	int i;
 
 	i = 0;
-	if (n < 0)
-		i++;
 	while (n || !i)
 	{
 		n /= base;
@@ -35,8 +33,6 @@ static char	base_digit(unsigned long n, int base)
 
 	format = "0123456789ABCDEF";
 	i = n % base;
-	if (i < 0)
-		i *= -1;
 	return (format[i]);
 }
 
@@ -50,10 +46,6 @@ char		*ft_itoa_base_ul(unsigned long n, int base)
 	i = ft_nbrlen_base(n, base);
 	if (!(arr = ft_strnew(i)))
 		return (NULL);
-	if (n < 0)
-	{
-		arr[0] = '-';
-	}
 	arr[i--] = '\0';
 	while (i >= 0 && arr[i] != '-')
 	{
