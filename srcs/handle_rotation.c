@@ -14,11 +14,11 @@
 
 void	check_rotation(int key, t_mlx *mlx)
 {
-	if (key == 84 || key == 91)
+	if (key == 65433 || key == 65431)
 		handle_rotatex(key, mlx);
-	if (key == 86 || key == 88)
+	if (key == 65430 || key == 65432)
 		handle_rotatey(key, mlx);
-	if (key == 89 || key == 92)
+	if (key == 65429 || key == 65434)
 		handle_rotatez(key, mlx);
 }
 
@@ -40,27 +40,27 @@ void	check_360(t_line *line)
 
 void	handle_rotatex(int key, t_mlx *mlx)
 {
-	if (key == 91)
+	if (key == 65431)
 		mlx->line->rotatex -= 0.03;
-	if (key == 84)
+	if (key == 65433)
 		mlx->line->rotatex += 0.03;
 	check_360(mlx->line);
 }
 
 void	handle_rotatey(int key, t_mlx *mlx)
 {
-	if (key == 86)
+	if (key == 65430)
 		mlx->line->rotatey -= 0.03;
-	if (key == 88)
+	if (key == 65432)
 		mlx->line->rotatey += 0.03;
 	check_360(mlx->line);
 }
 
 void	handle_rotatez(int key, t_mlx *mlx)
 {
-	if (key == 89)
+	if (key == 65429)
 		mlx->line->rotatez += 0.05;
-	if (key == 92)
+	if (key == 65434)
 		mlx->line->rotatez -= 0.05;
 	check_360(mlx->line);
 }

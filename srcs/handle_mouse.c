@@ -23,7 +23,7 @@ int		mouse_press(int key, int x, int y, void *param)
 		mlx->mousex = x;
 		mlx->mousey = y;
 	}
-	if (key == 2)
+	if (key == 3)
 		mlx->mouse2 = 1;
 	if (key == 4)
 		mlx->line->zoom += 0.5;
@@ -42,7 +42,7 @@ int		mouse_release(int key, int x, int y, void *param)
 	mlx = param;
 	if (key == 1)
 		mlx->mouse1 = 0;
-	if (key == 2)
+	if (key == 3)
 		mlx->mouse2 = 0;
 	handle_drawing(mlx);
 	return (0);

@@ -17,24 +17,24 @@ int		check_key(int key, void *param)
 	t_mlx *mlx;
 
 	mlx = param;
-	if (key == 53)
+	if (key == 65307)
 		exit(0);
-	if (key == 82)
+	if (key == 65438)
 		handle_reset(mlx);
-	if (key == 67)
+	if (key == 65450)
 		mlx->line->idle = !(mlx->line->idle);
-	if (key == 75)
+	if (key == 65455)
 		mlx->line->colors = !(mlx->line->colors);
-	if (key == 4)
+	if (key == 104)
 		mlx->gui = !(mlx->gui);
-	if (122 < key && key < 127)
-		handle_offset(126 - key, mlx);
-	if (key == 84 || key == 91 || key == 86 || key == 88 ||
-		key == 89 || key == 92)
+	if (65360 < key && key < 65365)
+		handle_offset(65364 - key, mlx);
+	if (key == 65430 || key == 65431 || key == 65432 || key == 65433 ||
+		key == 65429 || key == 65434)
 		check_rotation(key, mlx);
-	if (key == 83 || key == 85)
+	if (key == 65436 || key == 65435)
 		handle_pitch(key, mlx);
-	if (key == 87)
+	if (key == 65437)
 		handle_iso(mlx);
 	handle_drawing(mlx);
 	return (0);

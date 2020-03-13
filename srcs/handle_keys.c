@@ -24,20 +24,20 @@ int		handle_idle(t_mlx *mlx)
 void	handle_offset(int dir, t_mlx *mlx)
 {
 	if (dir == 0)
-		mlx->line->offsety -= 10;
-	if (dir == 1)
 		mlx->line->offsety += 10;
-	if (dir == 2)
+	if (dir == 1)
 		mlx->line->offsetx += 10;
+	if (dir == 2)
+		mlx->line->offsety -= 10;
 	if (dir == 3)
 		mlx->line->offsetx -= 10;
 }
 
 void	handle_pitch(int key, t_mlx *mlx)
 {
-	if (key == 85)
+	if (key == 65435)
 		mlx->line->pitch += 0.1;
-	if (key == 83)
+	if (key == 65436)
 		mlx->line->pitch -= 0.1;
 }
 

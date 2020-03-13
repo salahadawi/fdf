@@ -14,14 +14,11 @@
 
 void	draw_line(t_line *line, t_mlx *mlx)
 {
-	int *map;
-
 	if (line->autooffset)
 	{
 		line->offsetx = 750 - mlx->s_map->cols / 2 * 5 - mlx->s_map->mapxy[0];
 		line->offsety = 500 - mlx->s_map->rows / 2 * 5 - mlx->s_map->mapxy[1];
 	}
-	map = mlx->s_map->mapxy;
 	handle_color(line, mlx);
 	line->x1 = line->x1 * line->zoom;
 	line->x2 = line->x2 * line->zoom;

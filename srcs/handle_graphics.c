@@ -29,11 +29,11 @@ void	handle_graphics(t_map *s_map)
 	mlx->s_map = s_map;
 	mlx->line = line;
 	initialize_line(mlx->line, mlx);
-	mlx_hook(mlx->window, 2, 0, check_key, (void*)mlx);
-	mlx_hook(mlx->window, 4, 0, mouse_press, (void*)mlx);
-	mlx_hook(mlx->window, 5, 0, mouse_release, (void*)mlx);
-	mlx_hook(mlx->window, 6, 0, mouse_move, (void*)mlx);
-	mlx_hook(mlx->window, 12, 0, handle_idle, (void*)mlx);
+	mlx_hook(mlx->window, 2, KeyPressMask, check_key, (void*)mlx);
+	mlx_hook(mlx->window, 4, ButtonPressMask, mouse_press, (void*)mlx);
+	mlx_hook(mlx->window, 5, ButtonReleaseMask, mouse_release, (void*)mlx);
+	mlx_hook(mlx->window, 6, ButtonMotionMask, mouse_move, (void*)mlx);
+	//mlx_hook(mlx->window, 12, 0, handle_idle, (void*)mlx);
 	mlx_loop_hook(mlx->init, handle_idle, (void*)mlx);
 	map_to_coordinates(mlx->s_map);
 	handle_drawing((void*)mlx);

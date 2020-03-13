@@ -13,13 +13,14 @@
 #ifndef FDF_H
 # define FDF_H
 
-# include <mlx.h>
+# include "../minilibx/mlx.h"
 # include <stdlib.h>
 # include <fcntl.h>
 # include "ft_printf.h"
 # include "libft.h"
 # include "get_next_line.h"
 # include <math.h>
+# include <X11/X.h>
 
 # define WIN_HEIGHT	1000
 # define WIN_WIDTH	1500
